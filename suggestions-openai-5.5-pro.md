@@ -1,4 +1,4 @@
-# OpenAI 5.5 Pro Suggestions: Critical Review of the Hermes Obsidian Runtime and Cron Specification
+# OpenAI 5.5 Deep Research: Critical Review of the Hermes Obsidian Specification
 
 ## Executive summary
 
