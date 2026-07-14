@@ -40,14 +40,6 @@ The source material’s conceptual loop—collection or “war room,” maintain
 
 ## 2. Correction to the earlier architecture
 
-The principal vault rulebook should be:
-
-```text
-AGENTS.md
-```
-
-rather than `HERMES.md`.
-
 Hermes workdir cron jobs automatically load files such as `AGENTS.md`, `CLAUDE.md` and `.cursorrules`. Therefore, `AGENTS.md` is the correct runtime instruction file. `HERMES.md` can remain as human-facing documentation, but it should not be the only authoritative agent rulebook. Cron jobs sharing a workdir are also executed sequentially, which is useful for protecting the vault from concurrent writes. ([Hermes Agent][1])
 
 The remaining authoritative files are:
