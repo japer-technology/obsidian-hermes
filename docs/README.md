@@ -12,10 +12,12 @@ historical material.
   operational controls.
 - [Runtime specification v1.0](specification/v1.0.md) is the superseded
   cron-first baseline retained for migration and design history.
+- [Implementation status](implementation-status.md) maps the current pre-alpha
+  scaffold to v2.0 and lists the fail-closed runtime gaps.
 
-Canonical does not mean implemented. The repository remains in the design
-phase, and the root [README](../README.md) is the source of truth for current
-delivery status.
+Canonical does not mean implemented. The repository now contains a pre-alpha,
+validation-only scaffold; the root [README](../README.md) is the source of
+truth for current delivery status.
 
 ## Exploratory documents
 

@@ -1,0 +1,19 @@
+{
+  "schema": "hermes.skill/v2",
+  "schema_version": 2,
+  "id": "source-ingestion",
+  "revision": 1,
+  "status": "approved",
+  "purpose": "Preserve and index a source.",
+  "triggers": ["source ingestion"],
+  "permissions": {
+    "network_maximum": "allowlist",
+    "read": ["ReadOnly/10 Projects/**"],
+    "write": ["ReadWrite/30 Knowledge/**"]
+  },
+  "inputs": ["source"],
+  "outputs": ["raw-source"],
+  "agents": ["researcher"],
+  "review_after": "2026-11-01",
+  "shell_access": true
+}

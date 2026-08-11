@@ -1,0 +1,48 @@
+# Reference systemd unit for the local single-executor profile.
+# This is a starting point, not a production security claim. Review the account,
+# paths, executable, gateway transport, and sandbox against the deployed host.
+
+[Unit]
+Description=Obsidian Hermes deterministic control bridge
+Documentation=https://github.com/japer-technology/obsidian-hermes
+After=local-fs.target
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=obsidian-hermes
+Group=obsidian-hermes
+WorkingDirectory=/var/lib/obsidian-hermes
+StateDirectory=obsidian-hermes
+RuntimeDirectory=obsidian-hermes
+UMask=0077
+ExecStart=/usr/local/bin/obsidian-hermes bridge run --config /etc/obsidian-hermes/hermes.toml
+Restart=on-failure
+RestartSec=10s
+TimeoutStopSec=30s
+
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectClock=true
+ProtectControlGroups=true
+ProtectHome=true
+ProtectHostname=true
+ProtectKernelLogs=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=strict
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictSUIDSGID=true
+LockPersonality=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+ReadWritePaths=/srv/obsidian-hermes/reference-vault/ReadWrite
+ReadWritePaths=/srv/obsidian-hermes/reference-vault/ReadOnly
+ReadOnlyPaths=/var/lib/obsidian-hermes/empty-private-mask
+InaccessiblePaths=/srv/obsidian-hermes/reference-vault/Private
+
+[Install]
+WantedBy=multi-user.target
+

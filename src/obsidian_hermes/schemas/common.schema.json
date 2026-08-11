@@ -1,0 +1,172 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.obsidian-hermes.dev/v2/common.schema.json",
+  "title": "Obsidian Hermes v2 common definitions",
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "nullableString": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "catalogueId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+      "maxLength": 128
+    },
+    "taskId": {
+      "type": "string",
+      "pattern": "^task_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+    },
+    "commandId": {
+      "type": "string",
+      "pattern": "^cmd_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+    },
+    "runId": {
+      "type": "string",
+      "pattern": "^run_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+    },
+    "controlId": {
+      "type": "string",
+      "pattern": "^control_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+    },
+    "approvalId": {
+      "type": "string",
+      "pattern": "^approval_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+    },
+    "receiptId": {
+      "type": "string",
+      "pattern": "^receipt_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+    },
+    "eventId": {
+      "type": "string",
+      "pattern": "^event_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+    },
+    "traceId": {
+      "type": "string",
+      "pattern": "^trace_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+    },
+    "spanId": {
+      "type": "string",
+      "pattern": "^span_[0-7][0-9A-HJKMNP-TV-Z]{25}$"
+    },
+    "sourceId": {
+      "type": "string",
+      "pattern": "^src_sha256_[0-9a-f]{64}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rfc3339Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "nullableTimestamp": {
+      "oneOf": [
+        {"$ref": "#/$defs/rfc3339Timestamp"},
+        {"type": "null"}
+      ]
+    },
+    "reviewDate": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "vaultPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^(?:ReadOnly|ReadWrite)/(?:[^/\\u0000-\\u001f\\\\*?\\[\\]]+/)*[^/\\u0000-\\u001f\\\\*?\\[\\]]+/?$",
+      "allOf": [
+        {"not": {"pattern": "(?:^|/)\\.\\.?(?:/|$)"}},
+        {"not": {"pattern": "(?:^|/)Private(?:/|$)"}}
+      ]
+    },
+    "vaultGlob": {
+      "oneOf": [
+        {"$ref": "#/$defs/vaultPath"},
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^(?:ReadOnly|ReadWrite)/(?:\\*\\*|(?:[^/\\u0000-\\u001f\\\\*?\\[\\]]+/)*[^/\\u0000-\\u001f\\\\*?\\[\\]]+/\\*\\*)$",
+          "allOf": [
+            {"not": {"pattern": "(?:^|/)\\.\\.?(?:/|$)"}},
+            {"not": {"pattern": "(?:^|/)Private(?:/|$)"}}
+          ]
+        }
+      ]
+    },
+    "readOnlyPath": {
+      "allOf": [
+        {"$ref": "#/$defs/vaultPath"},
+        {"pattern": "^ReadOnly/"}
+      ]
+    },
+    "readWritePath": {
+      "allOf": [
+        {"$ref": "#/$defs/vaultPath"},
+        {"pattern": "^ReadWrite/"}
+      ]
+    },
+    "readWriteGlob": {
+      "allOf": [
+        {"$ref": "#/$defs/vaultGlob"},
+        {"pattern": "^ReadWrite/"}
+      ]
+    },
+    "destination": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 253,
+      "pattern": "^(?:\\[[0-9A-Fa-f:]+\\]|[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?)(?::[0-9]{1,5})?$"
+    },
+    "modelPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "name"],
+      "properties": {
+        "provider": {"$ref": "#/$defs/nonEmptyString"},
+        "name": {"$ref": "#/$defs/nonEmptyString"}
+      }
+    },
+    "requiredAttestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "key_id", "signature"],
+      "properties": {
+        "method": {"enum": ["local-bridge", "signature"]},
+        "key_id": {"$ref": "#/$defs/nonEmptyString"},
+        "signature": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8192
+        }
+      }
+    },
+    "nullableAttestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "key_id", "signature"],
+      "properties": {
+        "method": {"type": ["string", "null"], "enum": ["local-bridge", "signature", null]},
+        "key_id": {"$ref": "#/$defs/nullableString"},
+        "signature": {"type": ["string", "null"], "minLength": 1, "maxLength": 8192}
+      }
+    }
+  }
+}

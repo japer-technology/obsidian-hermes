@@ -4,14 +4,14 @@ Thanks for helping improve Obsidian Hermes.
 
 ## Current scope
 
-The project is in the specification and design phase. The repository does not
-yet have an implementation language, package manager, build, or test suite.
-Documentation, design corrections, focused examples, and implementation
-proposals are welcome.
+The v2 reference scaffold uses Python 3.12, a `src/` package, explicit SQLite
+migrations, JSON Schema Draft 2020-12, PyYAML's safe loader with a stricter
+frontmatter profile, and pytest. The bridge remains validation-only while its
+security-sensitive runtime adapters are built and tested.
 
-Do not introduce a language-specific project skeleton or dependency stack
-without an accepted design proposal. Those choices should follow the runtime
-contract rather than define it accidentally.
+Do not widen a closed schema vocabulary, enable dispatch, or fill a
+security-sensitive port with a permissive fallback without updating the
+normative contract and its recovery/security tests.
 
 ## Before proposing a change
 
@@ -63,10 +63,19 @@ must define an approval and idempotency model.
   unredacted logs.
 - Use an imperative commit subject under 72 characters where practical.
 
-There are currently no project build or test commands. For documentation
-changes, verify Markdown links, issue-form syntax, and whitespace. Add
-toolchain-specific validation instructions when an implementation toolchain is
-accepted.
+Run the deterministic checks before opening a pull request:
+
+```console
+python -m pip install -e ".[dev]"
+python -m ruff format --check .
+python -m ruff check .
+python -m mypy
+python -m pytest
+```
+
+Docker boundary and restore tests require isolated fixtures and remain separate
+from the portable unit suite. Never substitute a mocked mount result for the
+required effective-mount and private-token tests.
 
 By contributing, you agree that your contribution is licensed under the
 [MIT License](LICENSE).

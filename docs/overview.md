@@ -772,9 +772,11 @@ The project is operational when:
 
 ## Project Status
 
-This repository currently defines the architecture and runtime specification
-for an Obsidian-based Hermes Agent control system. It does not yet contain a
-runnable implementation, reference vault, control bridge, or gate scripts.
+This repository now includes the pre-alpha, validation-only v2 scaffold
+described in the [implementation status](implementation-status.md): executable
+schemas, the deterministic resource/store kernel, a reference vault, idle
+gates, and a read-only bridge loop. It does not yet dispatch Hermes workers or
+provide a conforming end-to-end lifecycle.
 
 The first implementation milestone is a complete local workflow:
 

@@ -1,0 +1,14 @@
+{
+  "schema": "hermes.receipt/v2",
+  "schema_version": 2,
+  "receipt_id": "receipt_not-a-ulid",
+  "trace_id": "trace_01ARZ3NDEKTSV4RRFFQ69G5FAY",
+  "command_id": "cmd_01ARZ3NDEKTSV4RRFFQ69G5FAW",
+  "run_id": "run_01ARZ3NDEKTSV4RRFFQ69G5FAX",
+  "step_id": "preserve-source",
+  "idempotency_key": "cmd_01ARZ3NDEKTSV4RRFFQ69G5FAW:preserve-source:v1",
+  "status": "completed",
+  "completed_at": "2026-08-11T03:17:00Z",
+  "outputs": [],
+  "content_hash": null
+}

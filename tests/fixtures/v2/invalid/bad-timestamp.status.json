@@ -1,0 +1,32 @@
+{
+  "schema": "hermes.status/v2",
+  "schema_version": 2,
+  "updated_at": "2026-08-11T03:20:00",
+  "profile": "default",
+  "executor_id": "host-example",
+  "fence_epoch": 7,
+  "gateway": {
+    "state": "online",
+    "last_seen_at": "2026-08-11T03:19:58Z"
+  },
+  "bridge": {
+    "state": "online",
+    "version": "2.0.0",
+    "last_reconcile_at": "2026-08-11T03:19:59Z"
+  },
+  "sandbox": {
+    "mount_verification": "passed",
+    "network_default": "denied"
+  },
+  "commands": {
+    "queued": 1,
+    "running": 1,
+    "approval_required": 0,
+    "blocked": 0,
+    "dead_letter": 0
+  },
+  "backup": {
+    "last_verified_at": null,
+    "last_restore_test_at": null
+  }
+}

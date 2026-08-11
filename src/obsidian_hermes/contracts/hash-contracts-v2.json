@@ -1,0 +1,37 @@
+{
+  "schema": "hermes.hash-contracts/v2",
+  "contract_version": 2,
+  "algorithm": "sha256",
+  "encoding": "sorted-compact-json-utf8",
+  "contracts": {
+    "hermes.task/v2": {
+      "exclude_paths": ["/observed"],
+      "include_body": false
+    },
+    "hermes.routine/v2": {
+      "exclude_paths": [
+        "/approval/approval_id",
+        "/approval/approved_spec_hash",
+        "/observed"
+      ],
+      "include_body": false
+    },
+    "hermes.control/v2": {
+      "exclude_paths": ["/attestation", "/observed"],
+      "include_body": false
+    },
+    "hermes.agent/v2": {
+      "exclude_paths": [],
+      "include_body": false
+    },
+    "hermes.skill/v2": {
+      "exclude_paths": [],
+      "include_body": false
+    }
+  },
+  "notes": [
+    "Only authorable resources with an explicit v2 field selection have a specification-hash contract; approvals use a separate exact attestation payload.",
+    "Routine approval references are excluded to avoid a circular approval hash.",
+    "The normative specification does not place Markdown bodies in any v2 specification hash."
+  ]
+}

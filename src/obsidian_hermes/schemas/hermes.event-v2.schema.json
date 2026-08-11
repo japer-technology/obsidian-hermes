@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.obsidian-hermes.dev/v2/hermes.event.json",
+  "title": "hermes.event/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_version",
+    "event_id",
+    "trace_id",
+    "span_id",
+    "parent_span_id",
+    "sequence",
+    "occurred_at",
+    "type",
+    "actor",
+    "outcome",
+    "data"
+  ],
+  "properties": {
+    "schema": {"const": "hermes.event/v2"},
+    "schema_version": {"const": 2},
+    "event_id": {"$ref": "common.schema.json#/$defs/eventId"},
+    "trace_id": {"$ref": "common.schema.json#/$defs/traceId"},
+    "span_id": {"$ref": "common.schema.json#/$defs/spanId"},
+    "parent_span_id": {
+      "oneOf": [{"$ref": "common.schema.json#/$defs/spanId"}, {"type": "null"}]
+    },
+    "sequence": {"type": "integer", "minimum": 0},
+    "occurred_at": {"$ref": "common.schema.json#/$defs/rfc3339Timestamp"},
+    "type": {
+      "enum": [
+        "bridge.startup",
+        "bridge.ready",
+        "bridge.blocked",
+        "bridge.drift_detected",
+        "gateway.online",
+        "gateway.offline",
+        "resource.validated",
+        "resource.invalid",
+        "command.queued",
+        "command.validated",
+        "command.claimed",
+        "command.running",
+        "command.awaiting_approval",
+        "command.retry_scheduled",
+        "command.verifying",
+        "command.completed",
+        "command.blocked",
+        "command.failed",
+        "command.cancelled",
+        "command.dead_letter",
+        "command.superseded",
+        "control.applied",
+        "control.rejected",
+        "routine.reconciled",
+        "routine.drift_detected",
+        "approval.attested",
+        "approval.rejected",
+        "sandbox.mounts_verified",
+        "security.denied"
+      ]
+    },
+    "actor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "^[a-z][a-z0-9-]*:[A-Za-z0-9._-]+$"
+    },
+    "task_id": {
+      "oneOf": [{"$ref": "common.schema.json#/$defs/taskId"}, {"type": "null"}]
+    },
+    "command_id": {
+      "oneOf": [{"$ref": "common.schema.json#/$defs/commandId"}, {"type": "null"}]
+    },
+    "run_id": {
+      "oneOf": [{"$ref": "common.schema.json#/$defs/runId"}, {"type": "null"}]
+    },
+    "outcome": {"enum": ["success", "failure", "denied", "noop"]},
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "maxProperties": 16,
+      "properties": {
+        "worker_class": {"$ref": "common.schema.json#/$defs/catalogueId"},
+        "state": {
+          "enum": [
+            "queued",
+            "validated",
+            "claimed",
+            "running",
+            "awaiting_approval",
+            "retry_scheduled",
+            "verifying",
+            "completed",
+            "blocked",
+            "failed",
+            "cancelled",
+            "dead_letter",
+            "superseded",
+            "in_sync",
+            "out_of_sync",
+            "reconciling",
+            "degraded",
+            "paused",
+            "offline"
+          ]
+        },
+        "reason": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+        "failure_class": {"$ref": "common.schema.json#/$defs/catalogueId"},
+        "resource_schema": {
+          "enum": [
+            "hermes.task/v2",
+            "hermes.run/v2",
+            "hermes.routine/v2",
+            "hermes.control/v2",
+            "hermes.approval/v2",
+            "hermes.agent/v2",
+            "hermes.skill/v2",
+            "hermes.raw-source/v2",
+            "hermes.receipt/v2",
+            "hermes.status/v2",
+            "hermes.event/v2"
+          ]
+        },
+        "resource_id": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+        "revision": {"$ref": "common.schema.json#/$defs/revision"},
+        "fence_epoch": {"type": "integer", "minimum": 0},
+        "attempt": {"type": "integer", "minimum": 1},
+        "native_job_id": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+        "approval_id": {"$ref": "common.schema.json#/$defs/approvalId"},
+        "control_id": {"$ref": "common.schema.json#/$defs/controlId"},
+        "path": {"$ref": "common.schema.json#/$defs/vaultPath"},
+        "checkpoint": {"$ref": "common.schema.json#/$defs/catalogueId"},
+        "duration_ms": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

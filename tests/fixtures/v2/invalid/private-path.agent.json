@@ -1,0 +1,26 @@
+{
+  "schema": "hermes.agent/v2",
+  "schema_version": 2,
+  "id": "researcher",
+  "revision": 1,
+  "status": "approved",
+  "purpose": "This profile must not see Private.",
+  "prompt_sources": ["ReadOnly/Policies/AGENTS.md"],
+  "model": {"provider": "test-provider", "name": "test-model"},
+  "allowed_skills": ["source-ingestion"],
+  "context_roots_maximum": ["Private/Secrets/**"],
+  "permissions_maximum": {
+    "network": "deny",
+    "read": ["ReadOnly/**"],
+    "write": ["ReadWrite/99 Staging/**"],
+    "external_effects": "deny",
+    "destructive_write": "deny"
+  },
+  "budgets_maximum": {
+    "runtime_minutes": 15,
+    "input_tokens": 75000,
+    "output_tokens": 15000,
+    "network_requests": 0
+  },
+  "review_after": "2026-11-01"
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.obsidian-hermes.dev/v2/hermes.raw-source.json",
+  "title": "hermes.raw-source/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_version",
+    "source_id",
+    "source_type",
+    "source_url",
+    "retrieved_at",
+    "content_sha256",
+    "title",
+    "author",
+    "published_at",
+    "trace_id",
+    "task_id",
+    "immutable",
+    "security_flags"
+  ],
+  "properties": {
+    "schema": {"const": "hermes.raw-source/v2"},
+    "schema_version": {"const": 2},
+    "source_id": {"$ref": "common.schema.json#/$defs/sourceId"},
+    "source_type": {"const": "article"},
+    "source_url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https?://",
+      "maxLength": 4096
+    },
+    "retrieved_at": {"$ref": "common.schema.json#/$defs/rfc3339Timestamp"},
+    "content_sha256": {"$ref": "common.schema.json#/$defs/sha256"},
+    "title": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+    "author": {"$ref": "common.schema.json#/$defs/nullableString"},
+    "published_at": {"$ref": "common.schema.json#/$defs/nullableTimestamp"},
+    "trace_id": {"$ref": "common.schema.json#/$defs/traceId"},
+    "task_id": {"$ref": "common.schema.json#/$defs/taskId"},
+    "immutable": {"const": true},
+    "security_flags": {
+      "type": "array",
+      "items": {"const": "prompt_injection"},
+      "maxItems": 1,
+      "uniqueItems": true
+    }
+  }
+}

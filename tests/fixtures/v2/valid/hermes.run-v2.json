@@ -1,0 +1,36 @@
+{
+  "schema": "hermes.run/v2",
+  "schema_version": 2,
+  "id": "run_01ARZ3NDEKTSV4RRFFQ69G5FAX",
+  "task_id": "task_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+  "task_generation": 1,
+  "command_id": "cmd_01ARZ3NDEKTSV4RRFFQ69G5FAW",
+  "trace_id": "trace_01ARZ3NDEKTSV4RRFFQ69G5FAY",
+  "state": "running",
+  "agent_profile": "researcher",
+  "model": {
+    "provider": "test-provider",
+    "name": "test-model",
+    "source": "routine"
+  },
+  "created_at": "2026-08-11T03:10:00Z",
+  "started_at": "2026-08-11T03:11:02Z",
+  "finished_at": null,
+  "context_manifest": [
+    {
+      "ref": "architecture",
+      "reason": "Explicit task context"
+    }
+  ],
+  "skills_used": ["source-ingestion"],
+  "usage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "network_requests": 0
+  },
+  "outputs": [],
+  "approval_ids": [],
+  "receipt_id": null,
+  "last_checkpoint": null,
+  "error": null
+}

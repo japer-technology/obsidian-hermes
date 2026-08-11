@@ -1,0 +1,17 @@
+# Reference-only Hermes Docker configuration fragment.
+#
+# This example is not a complete or production-secure container policy. Verify
+# the effective mount table, disable network access by default, drop privileges
+# and capabilities, and run all v2 filesystem-boundary tests before execution.
+#
+# Create /var/lib/obsidian-hermes/empty-private-mask as an empty directory
+# outside the vault. It must not be a symlink and must never be replaced with
+# the host's real Private directory.
+terminal:
+  backend: docker
+  docker_mount_cwd_to_workspace: false
+  docker_volumes:
+    - "/srv/obsidian-hermes/reference-vault/ReadWrite:/workspace/obsidian/ReadWrite"
+    - "/srv/obsidian-hermes/reference-vault/ReadOnly:/workspace/obsidian/ReadOnly:ro"
+    - "/var/lib/obsidian-hermes/empty-private-mask:/workspace/obsidian/Private:ro"
+

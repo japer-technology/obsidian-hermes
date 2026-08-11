@@ -1,0 +1,17 @@
+{
+  "schema": "hermes.event/v2",
+  "schema_version": 2,
+  "event_id": "event_01ARZ3NDEKTSV4RRFFQ69G5FB2",
+  "trace_id": "trace_01ARZ3NDEKTSV4RRFFQ69G5FAY",
+  "span_id": "span_01ARZ3NDEKTSV4RRFFQ69G5FAZ",
+  "parent_span_id": null,
+  "sequence": 12,
+  "occurred_at": "2026-08-11T03:16:00Z",
+  "type": "model.did-whatever-it-wanted",
+  "actor": "bridge:local",
+  "task_id": "task_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+  "command_id": "cmd_01ARZ3NDEKTSV4RRFFQ69G5FAW",
+  "run_id": "run_01ARZ3NDEKTSV4RRFFQ69G5FAX",
+  "outcome": "success",
+  "data": {"worker_class": "ingest"}
+}

@@ -1,0 +1,59 @@
+# Reference configuration for a local, single-executor v2 scaffold.
+#
+# This file is not a production security profile. Review every path, account,
+# runtime capability, network rule, and service-manager setting before enabling
+# execution. Keep validation_only enabled and dispatch_enabled disabled until
+# every boundary, recovery, and restore test passes.
+
+schema_version = 2
+executor_id = "host-example"
+
+[bridge]
+validation_only = true
+dispatch_enabled = false
+reconcile_interval_seconds = 30
+state_directory = "/var/lib/obsidian-hermes"
+database_path = "/var/lib/obsidian-hermes/bridge.sqlite3"
+lock_path = "/run/obsidian-hermes/bridge.lock"
+policy_directory = "/srv/obsidian-hermes/reference-vault/ReadOnly/Policies"
+
+[hermes]
+executable = "/usr/local/bin/hermes"
+profile = "default"
+timezone = "Etc/UTC"
+gateway_restart_enabled = false
+
+[vault]
+read_write_root = "/srv/obsidian-hermes/reference-vault/ReadWrite"
+read_only_root = "/srv/obsidian-hermes/reference-vault/ReadOnly"
+# This must be an empty, non-symlink directory outside the real vault.
+private_mask_root = "/var/lib/obsidian-hermes/empty-private-mask"
+# Deliberately do not configure or expose the host's real Private directory.
+
+[worker]
+vault_root = "/workspace/obsidian"
+read_write_root = "/workspace/obsidian/ReadWrite"
+read_only_root = "/workspace/obsidian/ReadOnly"
+private_mask_root = "/workspace/obsidian/Private"
+network_default = "deny"
+
+[limits]
+max_files_per_scan = 10000
+max_resource_bytes = 1048576
+max_items_per_dispatch = 3
+lease_seconds = 900
+bulk_change_files = 10
+
+# Capability values are logical names resolved through supported Hermes
+# interfaces. They are not arbitrary host script paths from resource notes.
+[capabilities]
+ingest_gate = "obsidian-ingest-gate"
+queue_watchdog = "obsidian-queue-watchdog"
+
+# Add only exact provider/model tuples discovered and approved for this
+# deployment. An empty list ensures scheduled model work fails closed.
+permitted_models = []
+
+[security]
+network_enforcement = "unconfigured"
+attestation_key_ref = "secret://bridge/approval-signing-key"

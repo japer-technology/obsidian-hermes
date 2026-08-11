@@ -1,0 +1,43 @@
+{
+  "schema": "hermes.agent/v2",
+  "schema_version": 2,
+  "id": "researcher",
+  "revision": 1,
+  "status": "approved",
+  "purpose": "Perform evidence-linked research and source ingestion.",
+  "prompt_sources": [
+    "ReadOnly/Policies/AGENTS.md",
+    "ReadOnly/Policies/SCHEMA.md"
+  ],
+  "model": {
+    "provider": "test-provider",
+    "name": "test-model"
+  },
+  "allowed_skills": ["source-ingestion"],
+  "context_roots_maximum": [
+    "ReadOnly/10 Projects/**",
+    "ReadOnly/40 Memory/**",
+    "ReadWrite/30 Knowledge/**"
+  ],
+  "permissions_maximum": {
+    "network": "allowlist",
+    "read": [
+      "ReadOnly/**",
+      "ReadWrite/30 Knowledge/**"
+    ],
+    "write": [
+      "ReadWrite/30 Knowledge/**",
+      "ReadWrite/06 Outputs/**",
+      "ReadWrite/99 Staging/**"
+    ],
+    "external_effects": "deny",
+    "destructive_write": "deny"
+  },
+  "budgets_maximum": {
+    "runtime_minutes": 15,
+    "input_tokens": 75000,
+    "output_tokens": 15000,
+    "network_requests": 20
+  },
+  "review_after": "2026-11-01"
+}

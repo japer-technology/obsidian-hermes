@@ -1,0 +1,242 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.obsidian-hermes.dev/v2/hermes.task.json",
+  "title": "hermes.task/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_version",
+    "id",
+    "revision",
+    "title",
+    "desired_state",
+    "operation",
+    "mode",
+    "priority",
+    "created_at",
+    "requested_by",
+    "project_ref",
+    "agent_profile",
+    "goal",
+    "context_refs",
+    "context_roots",
+    "skills",
+    "inputs",
+    "permissions",
+    "budgets",
+    "approval_policy",
+    "completion_criteria",
+    "output"
+  ],
+  "properties": {
+    "schema": {"const": "hermes.task/v2"},
+    "schema_version": {"const": 2},
+    "id": {"$ref": "common.schema.json#/$defs/taskId"},
+    "revision": {"$ref": "common.schema.json#/$defs/revision"},
+    "title": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+    "desired_state": {"enum": ["draft", "ready", "paused", "cancelled"]},
+    "operation": {"enum": ["source.ingest", "brief.generate"]},
+    "mode": {"enum": ["execute", "dry-run"]},
+    "priority": {"type": "integer", "minimum": 0, "maximum": 100},
+    "created_at": {"$ref": "common.schema.json#/$defs/rfc3339Timestamp"},
+    "requested_by": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+    "project_ref": {"$ref": "common.schema.json#/$defs/catalogueId"},
+    "agent_profile": {"$ref": "common.schema.json#/$defs/catalogueId"},
+    "goal": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+    "context_refs": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/catalogueId"},
+      "uniqueItems": true,
+      "maxItems": 64
+    },
+    "context_roots": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/vaultPath"},
+      "uniqueItems": true,
+      "maxItems": 64
+    },
+    "skills": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/catalogueId"},
+      "uniqueItems": true,
+      "maxItems": 32
+    },
+    "inputs": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/urlInput"},
+      "maxItems": 32
+    },
+    "permissions": {"$ref": "#/$defs/permissions"},
+    "budgets": {"$ref": "#/$defs/budgets"},
+    "approval_policy": {"$ref": "#/$defs/approvalPolicy"},
+    "completion_criteria": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+      "minItems": 1,
+      "maxItems": 64
+    },
+    "output": {"$ref": "#/$defs/output"},
+    "observed": {"$ref": "#/$defs/observed"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"operation": {"const": "source.ingest"}}, "required": ["operation"]},
+      "then": {
+        "properties": {
+          "inputs": {"minItems": 1},
+          "output": {"properties": {"kind": {"const": "source-summary"}}}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"operation": {"const": "brief.generate"}}, "required": ["operation"]},
+      "then": {
+        "properties": {
+          "inputs": {"maxItems": 0},
+          "output": {"properties": {"kind": {"const": "daily-brief"}}}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "urlInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "value"],
+      "properties": {
+        "type": {"const": "url"},
+        "value": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https?://",
+          "maxLength": 4096
+        }
+      }
+    },
+    "network": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "destinations"],
+          "properties": {
+            "mode": {"const": "deny"},
+            "destinations": {"type": "array", "maxItems": 0}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "destinations"],
+          "properties": {
+            "mode": {"const": "allowlist"},
+            "destinations": {
+              "type": "array",
+              "items": {"$ref": "common.schema.json#/$defs/destination"},
+              "minItems": 1,
+              "maxItems": 64,
+              "uniqueItems": true
+            }
+          }
+        }
+      ]
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["network", "read", "write", "external_effects", "destructive_write"],
+      "properties": {
+        "network": {"$ref": "#/$defs/network"},
+        "read": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/vaultGlob"},
+          "uniqueItems": true,
+          "maxItems": 128
+        },
+        "write": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/readWriteGlob"},
+          "uniqueItems": true,
+          "maxItems": 128
+        },
+        "external_effects": {"const": "deny"},
+        "destructive_write": {"const": "deny"}
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_runtime_minutes",
+        "max_input_tokens",
+        "max_output_tokens",
+        "max_network_requests"
+      ],
+      "properties": {
+        "max_runtime_minutes": {"type": "integer", "minimum": 1},
+        "max_input_tokens": {"type": "integer", "minimum": 1},
+        "max_output_tokens": {"type": "integer", "minimum": 1},
+        "max_network_requests": {"type": "integer", "minimum": 0}
+      }
+    },
+    "approvalPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_before"],
+      "properties": {
+        "required_before": {
+          "type": "array",
+          "items": {"const": "bulk_vault_write"},
+          "uniqueItems": true,
+          "maxItems": 1
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path"],
+      "properties": {
+        "kind": {"enum": ["source-summary", "daily-brief"]},
+        "path": {"$ref": "common.schema.json#/$defs/readWritePath"}
+      }
+    },
+    "observed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generation",
+        "state",
+        "active_run_id",
+        "last_terminal_run_id",
+        "last_error",
+        "reconciled_at"
+      ],
+      "properties": {
+        "generation": {"$ref": "common.schema.json#/$defs/generation"},
+        "state": {
+          "enum": [
+            "pending",
+            "invalid",
+            "queued",
+            "running",
+            "approval_required",
+            "blocked",
+            "completed",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "active_run_id": {
+          "oneOf": [{"$ref": "common.schema.json#/$defs/runId"}, {"type": "null"}]
+        },
+        "last_terminal_run_id": {
+          "oneOf": [{"$ref": "common.schema.json#/$defs/runId"}, {"type": "null"}]
+        },
+        "last_error": {"$ref": "common.schema.json#/$defs/nullableString"},
+        "reconciled_at": {"$ref": "common.schema.json#/$defs/nullableTimestamp"}
+      }
+    }
+  }
+}

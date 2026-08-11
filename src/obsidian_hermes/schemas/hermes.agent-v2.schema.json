@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.obsidian-hermes.dev/v2/hermes.agent.json",
+  "title": "hermes.agent/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_version",
+    "id",
+    "revision",
+    "status",
+    "purpose",
+    "prompt_sources",
+    "model",
+    "allowed_skills",
+    "context_roots_maximum",
+    "permissions_maximum",
+    "budgets_maximum",
+    "review_after"
+  ],
+  "properties": {
+    "schema": {"const": "hermes.agent/v2"},
+    "schema_version": {"const": 2},
+    "id": {"$ref": "common.schema.json#/$defs/catalogueId"},
+    "revision": {"$ref": "common.schema.json#/$defs/revision"},
+    "status": {"const": "approved"},
+    "purpose": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+    "prompt_sources": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/readOnlyPath"},
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true
+    },
+    "model": {"$ref": "common.schema.json#/$defs/modelPin"},
+    "allowed_skills": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/catalogueId"},
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "context_roots_maximum": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/vaultGlob"},
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "permissions_maximum": {"$ref": "#/$defs/permissionsMaximum"},
+    "budgets_maximum": {"$ref": "#/$defs/budgetsMaximum"},
+    "review_after": {"$ref": "common.schema.json#/$defs/reviewDate"}
+  },
+  "$defs": {
+    "permissionsMaximum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["network", "read", "write", "external_effects", "destructive_write"],
+      "properties": {
+        "network": {"enum": ["deny", "allowlist"]},
+        "read": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/vaultGlob"},
+          "maxItems": 128,
+          "uniqueItems": true
+        },
+        "write": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/readWriteGlob"},
+          "maxItems": 128,
+          "uniqueItems": true
+        },
+        "external_effects": {"const": "deny"},
+        "destructive_write": {"const": "deny"}
+      }
+    },
+    "budgetsMaximum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runtime_minutes", "input_tokens", "output_tokens", "network_requests"],
+      "properties": {
+        "runtime_minutes": {"type": "integer", "minimum": 1},
+        "input_tokens": {"type": "integer", "minimum": 1},
+        "output_tokens": {"type": "integer", "minimum": 1},
+        "network_requests": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

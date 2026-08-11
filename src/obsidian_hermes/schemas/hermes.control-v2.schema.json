@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.obsidian-hermes.dev/v2/hermes.control.json",
+  "title": "hermes.control/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_version",
+    "id",
+    "revision",
+    "operation",
+    "parameters",
+    "requested_by",
+    "created_at",
+    "expires_at",
+    "attestation",
+    "observed"
+  ],
+  "properties": {
+    "schema": {"const": "hermes.control/v2"},
+    "schema_version": {"const": 2},
+    "id": {"$ref": "common.schema.json#/$defs/controlId"},
+    "revision": {"$ref": "common.schema.json#/$defs/revision"},
+    "operation": {
+      "enum": [
+        "task.cancel",
+        "task.retry",
+        "task.snooze",
+        "routine.run-once",
+        "system.reconcile",
+        "system.validate",
+        "system.verify-mounts"
+      ]
+    },
+    "target": {
+      "oneOf": [{"$ref": "#/$defs/taskTarget"}, {"$ref": "#/$defs/routineTarget"}]
+    },
+    "parameters": {"type": "object"},
+    "requested_by": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+    "created_at": {"$ref": "common.schema.json#/$defs/rfc3339Timestamp"},
+    "expires_at": {"$ref": "common.schema.json#/$defs/rfc3339Timestamp"},
+    "attestation": {"$ref": "common.schema.json#/$defs/requiredAttestation"},
+    "observed": {"$ref": "#/$defs/observed"}
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "operation": {"enum": ["task.cancel", "task.retry"]},
+        "target": {"$ref": "#/$defs/taskTarget"},
+        "parameters": {"maxProperties": 0, "additionalProperties": false}
+      },
+      "required": ["target"]
+    },
+    {
+      "properties": {
+        "operation": {"const": "task.snooze"},
+        "target": {"$ref": "#/$defs/taskTarget"},
+        "parameters": {
+          "additionalProperties": false,
+          "required": ["not_before"],
+          "properties": {
+            "not_before": {"$ref": "common.schema.json#/$defs/rfc3339Timestamp"}
+          }
+        }
+      },
+      "required": ["target"]
+    },
+    {
+      "properties": {
+        "operation": {"const": "routine.run-once"},
+        "target": {"$ref": "#/$defs/routineTarget"},
+        "parameters": {"maxProperties": 0, "additionalProperties": false}
+      },
+      "required": ["target"]
+    },
+    {
+      "properties": {
+        "operation": {
+          "enum": ["system.reconcile", "system.validate", "system.verify-mounts"]
+        },
+        "parameters": {"maxProperties": 0, "additionalProperties": false}
+      },
+      "not": {"required": ["target"]}
+    }
+  ],
+  "$defs": {
+    "taskTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id"],
+      "properties": {
+        "type": {"const": "task"},
+        "id": {"$ref": "common.schema.json#/$defs/taskId"}
+      }
+    },
+    "routineTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id"],
+      "properties": {
+        "type": {"const": "routine"},
+        "id": {"$ref": "common.schema.json#/$defs/catalogueId"}
+      }
+    },
+    "observed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "applied_at", "result_event_id", "error"],
+      "properties": {
+        "state": {"enum": ["pending", "applied", "rejected", "expired", "failed"]},
+        "applied_at": {"$ref": "common.schema.json#/$defs/nullableTimestamp"},
+        "result_event_id": {
+          "oneOf": [{"$ref": "common.schema.json#/$defs/eventId"}, {"type": "null"}]
+        },
+        "error": {"$ref": "common.schema.json#/$defs/nullableString"}
+      }
+    }
+  }
+}

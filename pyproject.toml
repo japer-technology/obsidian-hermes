@@ -1,0 +1,90 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "obsidian-hermes"
+version = "0.1.0a0"
+description = "Deterministic control bridge for the Obsidian Hermes v2 runtime"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Obsidian Hermes contributors" },
+]
+keywords = ["hermes", "obsidian", "automation", "control-plane"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
+]
+dependencies = [
+  "jsonschema[format]>=4.23,<5",
+  "PyYAML>=6.0.2,<7",
+  "tzdata>=2025.2; platform_system == 'Windows'",
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.14,<2",
+  "pytest>=8.3,<9",
+  "pytest-cov>=6,<7",
+  "ruff>=0.9,<1",
+  "types-PyYAML>=6.0.12,<7",
+]
+
+[project.scripts]
+obsidian-hermes = "obsidian_hermes.cli:main"
+obsidian-ingest-gate = "obsidian_hermes.phase_one.gates:ingest_main"
+obsidian-queue-watchdog = "obsidian_hermes.phase_one.gates:watchdog_main"
+
+[project.urls]
+Documentation = "https://github.com/japer-technology/obsidian-hermes/tree/main/docs"
+Repository = "https://github.com/japer-technology/obsidian-hermes"
+Issues = "https://github.com/japer-technology/obsidian-hermes/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/obsidian_hermes"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/config",
+  "/docs",
+  "/src",
+  "/tests",
+  "/CONTRIBUTING.md",
+  "/LICENSE",
+  "/README.md",
+]
+
+[tool.pytest.ini_options]
+addopts = "--strict-config --strict-markers -ra"
+testpaths = ["tests"]
+markers = [
+  "acceptance: v2 acceptance contract; may require external runtime support",
+  "docker: requires a working Docker daemon and hardened test fixture",
+  "integration: crosses package or process boundaries",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["obsidian_hermes"]
+
+[tool.coverage.run]
+branch = true
+source = ["obsidian_hermes"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true

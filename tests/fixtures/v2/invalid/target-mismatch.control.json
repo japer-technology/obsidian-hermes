@@ -1,0 +1,26 @@
+{
+  "schema": "hermes.control/v2",
+  "schema_version": 2,
+  "id": "control_01ARZ3NDEKTSV4RRFFQ69G5FB1",
+  "revision": 1,
+  "operation": "routine.run-once",
+  "target": {
+    "type": "task",
+    "id": "task_01ARZ3NDEKTSV4RRFFQ69G5FAV"
+  },
+  "parameters": {},
+  "requested_by": "user:local-owner",
+  "created_at": "2026-08-11T03:20:00Z",
+  "expires_at": "2026-08-11T03:30:00Z",
+  "attestation": {
+    "method": "local-bridge",
+    "key_id": "local-owner",
+    "signature": "test-signature-not-for-production"
+  },
+  "observed": {
+    "state": "pending",
+    "applied_at": null,
+    "result_event_id": null,
+    "error": null
+  }
+}

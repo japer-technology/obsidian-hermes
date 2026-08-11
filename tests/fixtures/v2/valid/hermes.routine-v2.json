@@ -1,0 +1,53 @@
+{
+  "schema": "hermes.routine/v2",
+  "schema_version": 2,
+  "id": "ingest-worker",
+  "revision": 1,
+  "desired_state": "draft",
+  "name": "obsidian/knowledge/ingest-worker",
+  "schedule": {
+    "expression": "every 5m",
+    "timezone": "Etc/UTC"
+  },
+  "execution": {
+    "mode": "script-gated-agent",
+    "capability": "ingest",
+    "workdir": "/workspace/obsidian",
+    "script": "obsidian-ingest-gate",
+    "agent_profile": "researcher",
+    "provider": "test-provider",
+    "model": "test-model"
+  },
+  "permissions_maximum": {
+    "network": "allowlist",
+    "read": [
+      "ReadOnly/10 Projects/**",
+      "ReadOnly/30 Knowledge/raw/**",
+      "ReadWrite/30 Knowledge/**"
+    ],
+    "write": [
+      "ReadWrite/30 Knowledge/**",
+      "ReadWrite/06 Outputs/**",
+      "ReadWrite/99 Staging/**"
+    ],
+    "external_effects": "deny",
+    "destructive_write": "deny"
+  },
+  "limits": {
+    "max_items_per_run": 3,
+    "max_runtime_minutes": 10
+  },
+  "approval": {
+    "required_for_change": true,
+    "approval_id": null,
+    "approved_spec_hash": null
+  },
+  "observed": {
+    "state": "pending",
+    "native_job_id": null,
+    "applied_revision": null,
+    "applied_spec_hash": null,
+    "last_reconciled_at": null,
+    "last_error": null
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "hermes.skill/v2",
+  "schema_version": 2,
+  "id": "source-ingestion",
+  "revision": 1,
+  "status": "approved",
+  "purpose": "Preserve and index an external source with provenance.",
+  "triggers": ["source ingestion"],
+  "permissions": {
+    "network_maximum": "allowlist",
+    "read": [
+      "ReadOnly/10 Projects/**",
+      "ReadOnly/30 Knowledge/raw/**",
+      "ReadWrite/30 Knowledge/**"
+    ],
+    "write": [
+      "ReadWrite/30 Knowledge/**",
+      "ReadWrite/06 Outputs/**"
+    ]
+  },
+  "inputs": ["source"],
+  "outputs": ["raw-source", "source-summary"],
+  "agents": ["researcher"],
+  "review_after": "2026-11-01"
+}

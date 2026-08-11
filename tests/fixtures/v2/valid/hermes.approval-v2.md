@@ -1,0 +1,37 @@
+---
+schema: hermes.approval/v2
+schema_version: 2
+id: approval_01ARZ3NDEKTSV4RRFFQ69G5FB0
+revision: 1
+trace_id: trace_01ARZ3NDEKTSV4RRFFQ69G5FAY
+action_class: external_write
+risk_tier: 3
+subject:
+  type: task-plan
+  task_id: task_01ARZ3NDEKTSV4RRFFQ69G5FAV
+  run_id: run_01ARZ3NDEKTSV4RRFFQ69G5FAX
+  task_generation: 1
+  hash_kind: plan
+  hash: sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+requested_at: 2026-08-11T03:15:00Z
+expires_at: 2026-08-12T03:15:00Z
+decision: pending
+decided_by: null
+decided_at: null
+attestation:
+  method: null
+  key_id: null
+  signature: null
+---
+
+## Proposed action
+
+Test-only fixture; no authority or executable external action is granted.
+
+## Evidence
+
+- Linked plan fixture
+
+## Human decision
+
+Pending. A Markdown edit alone is not authority.

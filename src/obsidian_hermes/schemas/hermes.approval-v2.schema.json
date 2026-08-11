@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.obsidian-hermes.dev/v2/hermes.approval.json",
+  "title": "hermes.approval/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_version",
+    "id",
+    "revision",
+    "trace_id",
+    "action_class",
+    "risk_tier",
+    "subject",
+    "requested_at",
+    "expires_at",
+    "decision",
+    "decided_by",
+    "decided_at",
+    "attestation"
+  ],
+  "properties": {
+    "schema": {"const": "hermes.approval/v2"},
+    "schema_version": {"const": 2},
+    "id": {"$ref": "common.schema.json#/$defs/approvalId"},
+    "revision": {"$ref": "common.schema.json#/$defs/revision"},
+    "trace_id": {"$ref": "common.schema.json#/$defs/traceId"},
+    "action_class": {"enum": ["bulk_vault_write", "external_write", "routine_change"]},
+    "risk_tier": {"type": "integer", "minimum": 0, "maximum": 4},
+    "subject": {
+      "oneOf": [{"$ref": "#/$defs/taskPlanSubject"}, {"$ref": "#/$defs/routineSpecSubject"}]
+    },
+    "requested_at": {"$ref": "common.schema.json#/$defs/rfc3339Timestamp"},
+    "expires_at": {"$ref": "common.schema.json#/$defs/rfc3339Timestamp"},
+    "decision": {"enum": ["pending", "approved", "rejected"]},
+    "decided_by": {"$ref": "common.schema.json#/$defs/nullableString"},
+    "decided_at": {"$ref": "common.schema.json#/$defs/nullableTimestamp"},
+    "attestation": {"$ref": "common.schema.json#/$defs/nullableAttestation"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"decision": {"const": "pending"}}, "required": ["decision"]},
+      "then": {
+        "properties": {
+          "decided_by": {"type": "null"},
+          "decided_at": {"type": "null"},
+          "attestation": {
+            "properties": {
+              "method": {"type": "null"},
+              "key_id": {"type": "null"},
+              "signature": {"type": "null"}
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "decided_by": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+          "decided_at": {"$ref": "common.schema.json#/$defs/rfc3339Timestamp"},
+          "attestation": {"$ref": "common.schema.json#/$defs/requiredAttestation"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"action_class": {"const": "bulk_vault_write"}},
+        "required": ["action_class"]
+      },
+      "then": {
+        "properties": {
+          "risk_tier": {"const": 2},
+          "subject": {"$ref": "#/$defs/taskPlanSubject"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"action_class": {"const": "external_write"}},
+        "required": ["action_class"]
+      },
+      "then": {
+        "properties": {
+          "risk_tier": {"const": 3},
+          "subject": {"$ref": "#/$defs/taskPlanSubject"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"action_class": {"const": "routine_change"}},
+        "required": ["action_class"]
+      },
+      "then": {
+        "properties": {
+          "risk_tier": {"const": 4},
+          "subject": {"$ref": "#/$defs/routineSpecSubject"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action_class": {"const": "routine_change"},
+          "decision": {"enum": ["approved", "rejected"]}
+        },
+        "required": ["action_class", "decision"]
+      },
+      "then": {
+        "properties": {
+          "attestation": {
+            "properties": {
+              "method": {"const": "signature"}
+            },
+            "required": ["method"]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "taskPlanSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "task_id", "run_id", "task_generation", "hash_kind", "hash"],
+      "properties": {
+        "type": {"const": "task-plan"},
+        "task_id": {"$ref": "common.schema.json#/$defs/taskId"},
+        "run_id": {"$ref": "common.schema.json#/$defs/runId"},
+        "task_generation": {"type": "integer", "minimum": 1},
+        "hash_kind": {"const": "plan"},
+        "hash": {"$ref": "common.schema.json#/$defs/sha256"}
+      }
+    },
+    "routineSpecSubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "routine_id", "revision", "hash_kind", "hash"],
+      "properties": {
+        "type": {"const": "routine-spec"},
+        "routine_id": {"$ref": "common.schema.json#/$defs/catalogueId"},
+        "revision": {"$ref": "common.schema.json#/$defs/revision"},
+        "hash_kind": {"const": "specification"},
+        "hash": {"$ref": "common.schema.json#/$defs/sha256"}
+      }
+    }
+  }
+}

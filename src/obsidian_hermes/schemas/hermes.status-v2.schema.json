@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.obsidian-hermes.dev/v2/hermes.status.json",
+  "title": "hermes.status/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_version",
+    "updated_at",
+    "profile",
+    "executor_id",
+    "fence_epoch",
+    "gateway",
+    "bridge",
+    "sandbox",
+    "commands",
+    "backup"
+  ],
+  "properties": {
+    "schema": {"const": "hermes.status/v2"},
+    "schema_version": {"const": 2},
+    "updated_at": {"$ref": "common.schema.json#/$defs/rfc3339Timestamp"},
+    "profile": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+    "executor_id": {"$ref": "common.schema.json#/$defs/catalogueId"},
+    "fence_epoch": {"type": "integer", "minimum": 0},
+    "gateway": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "last_seen_at"],
+      "properties": {
+        "state": {"enum": ["online", "degraded", "blocked", "paused", "offline"]},
+        "last_seen_at": {"$ref": "common.schema.json#/$defs/nullableTimestamp"}
+      }
+    },
+    "bridge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "version", "last_reconcile_at"],
+      "properties": {
+        "state": {"enum": ["online", "degraded", "blocked", "paused", "offline"]},
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:(?:a|b|rc)[0-9]+|-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$"
+        },
+        "last_reconcile_at": {"$ref": "common.schema.json#/$defs/nullableTimestamp"}
+      }
+    },
+    "sandbox": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mount_verification", "network_default"],
+      "properties": {
+        "mount_verification": {"enum": ["passed", "failed", "unknown"]},
+        "network_default": {"const": "denied"}
+      }
+    },
+    "commands": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["queued", "running", "approval_required", "blocked", "dead_letter"],
+      "properties": {
+        "queued": {"type": "integer", "minimum": 0},
+        "running": {"type": "integer", "minimum": 0},
+        "approval_required": {"type": "integer", "minimum": 0},
+        "blocked": {"type": "integer", "minimum": 0},
+        "dead_letter": {"type": "integer", "minimum": 0}
+      }
+    },
+    "backup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["last_verified_at", "last_restore_test_at"],
+      "properties": {
+        "last_verified_at": {"$ref": "common.schema.json#/$defs/nullableTimestamp"},
+        "last_restore_test_at": {"$ref": "common.schema.json#/$defs/nullableTimestamp"}
+      }
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.obsidian-hermes.dev/v2/hermes.skill.json",
+  "title": "hermes.skill/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_version",
+    "id",
+    "revision",
+    "status",
+    "purpose",
+    "triggers",
+    "permissions",
+    "inputs",
+    "outputs",
+    "agents",
+    "review_after"
+  ],
+  "properties": {
+    "schema": {"const": "hermes.skill/v2"},
+    "schema_version": {"const": 2},
+    "id": {"$ref": "common.schema.json#/$defs/catalogueId"},
+    "revision": {"$ref": "common.schema.json#/$defs/revision"},
+    "status": {"const": "approved"},
+    "purpose": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+    "triggers": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/nonEmptyString"},
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "permissions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["network_maximum", "read", "write"],
+      "properties": {
+        "network_maximum": {"enum": ["deny", "allowlist"]},
+        "read": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/vaultGlob"},
+          "maxItems": 128,
+          "uniqueItems": true
+        },
+        "write": {
+          "type": "array",
+          "items": {"$ref": "common.schema.json#/$defs/readWriteGlob"},
+          "maxItems": 128,
+          "uniqueItems": true
+        }
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "items": {"enum": ["source"]},
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true
+    },
+    "outputs": {
+      "type": "array",
+      "items": {"enum": ["raw-source", "source-summary"]},
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true
+    },
+    "agents": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/catalogueId"},
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "review_after": {"$ref": "common.schema.json#/$defs/reviewDate"}
+  }
+}

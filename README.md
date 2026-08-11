@@ -1,8 +1,9 @@
 # Obsidian Hermes
 
 > [!WARNING]
-> Obsidian Hermes is in the specification and design phase. This repository
-> does not yet contain an installable or runnable implementation.
+> Obsidian Hermes is pre-alpha. The deterministic schema/store kernel and a
+> validation-only bridge are scaffolded, but worker dispatch is intentionally
+> disabled and Phase One is not yet conformant or safe for real execution.
 
 Obsidian Hermes is a local-first operating environment that uses an Obsidian
 vault as the command centre, durable memory, workflow interface, and audit log
@@ -18,7 +19,7 @@ routine definitions with the runtime.
 ```text
 User
   ↓
-Obsidian vault (commands, approvals, knowledge)
+Obsidian vault (tasks, approvals, context, results)
   ↓
 Deterministic control bridge
   ↓
@@ -50,22 +51,59 @@ Outputs, receipts, and updated knowledge
 
 See the [documentation index](docs/) for document ownership and status.
 
-## Repository status
+## Implemented scaffold
 
-The repository currently contains design documentation only. It does **not**
-yet ship the reference vault, control bridge, gate scripts, schemas, or tests
-described by the specification.
+The repository now establishes Python 3.12 as the reference implementation
+toolchain and includes:
 
-The next useful milestone is a minimal, testable vertical slice:
+- strict executable schemas and complete fixtures for all eleven v2 resources;
+- safe Markdown frontmatter parsing, typed identifiers, canonical hashes, and
+  a closed command-state policy;
+- an explicit SQLite migration for resources, commands, runs, leases,
+  approvals, receipts, events, outbox, fencing, and migration history;
+- a validation-only bridge and CLI that cannot dispatch workers;
+- the three-zone reference vault, deployment examples, and CI checks.
 
-1. a reference vault;
-2. deterministic queue gates;
-3. one end-to-end command lifecycle;
-4. the control bridge and health reporting.
+The Hermes discovery adapter, authenticated approvals and dispatch, hardened
+file opens, effective Docker mount inspection, network enforcement, workers,
+projections, backup/restore, and lifecycle recovery remain implementation work.
+See [implementation status](docs/implementation-status.md) for the exact
+boundary.
 
-Implementation-specific source, test, packaging, and CI structure should be
-introduced only after the implementation language and runtime contract are
-chosen.
+## Development
+
+Create a Python 3.12 environment and install the editable package:
+
+```console
+python -m pip install -e ".[dev]"
+python -m pytest
+python -m ruff format --check .
+python -m ruff check .
+python -m mypy
+```
+
+Useful validation-only commands are:
+
+```console
+obsidian-hermes validate schemas
+obsidian-hermes validate resource tests/fixtures/v2/valid/hermes.task-v2.json
+obsidian-hermes validate vault --config config/hermes.example.toml
+obsidian-hermes bridge run --config /etc/obsidian-hermes/hermes.toml --once
+```
+
+The example configuration contains deployment paths and must be copied and
+reviewed; it is not expected to run directly from a source checkout.
+
+## Repository layout
+
+| Path | Purpose |
+| --- | --- |
+| `src/obsidian_hermes/` | Deterministic bridge kernel and packaged contracts |
+| `tests/` | Unit, schema-conformance, security, and future acceptance coverage |
+| `reference-vault/` | Non-production three-zone Obsidian vault scaffold |
+| `config/` | Fail-closed reference bridge configuration |
+| `deploy/` | Docker/Hermes and service-manager examples |
+| `docs/` | Canonical specifications, implementation status, and research |
 
 ## Contributing
 

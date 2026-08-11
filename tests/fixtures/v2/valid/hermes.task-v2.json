@@ -1,0 +1,70 @@
+{
+  "schema": "hermes.task/v2",
+  "schema_version": 2,
+  "id": "task_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+  "revision": 1,
+  "title": "Ingest the supplied architecture source",
+  "desired_state": "ready",
+  "operation": "source.ingest",
+  "mode": "execute",
+  "priority": 50,
+  "created_at": "2026-08-11T03:09:00Z",
+  "requested_by": "user:local-owner",
+  "project_ref": "architecture",
+  "agent_profile": "researcher",
+  "goal": "Preserve, analyse, and index the supplied source.",
+  "context_refs": ["architecture"],
+  "context_roots": [
+    "ReadOnly/10 Projects/Architecture",
+    "ReadWrite/30 Knowledge"
+  ],
+  "skills": ["source-ingestion"],
+  "inputs": [
+    {
+      "type": "url",
+      "value": "https://example.invalid/source"
+    }
+  ],
+  "permissions": {
+    "network": {
+      "mode": "allowlist",
+      "destinations": ["example.invalid"]
+    },
+    "read": [
+      "ReadOnly/10 Projects/Architecture/**",
+      "ReadWrite/30 Knowledge/**"
+    ],
+    "write": [
+      "ReadWrite/30 Knowledge/**",
+      "ReadWrite/06 Outputs/**"
+    ],
+    "external_effects": "deny",
+    "destructive_write": "deny"
+  },
+  "budgets": {
+    "max_runtime_minutes": 10,
+    "max_input_tokens": 50000,
+    "max_output_tokens": 10000,
+    "max_network_requests": 10
+  },
+  "approval_policy": {
+    "required_before": []
+  },
+  "completion_criteria": [
+    "Raw content is preserved with a content hash.",
+    "Maintained knowledge links to the raw source.",
+    "The run has a terminal receipt."
+  ],
+  "output": {
+    "kind": "source-summary",
+    "path": "ReadWrite/06 Outputs/Reports/"
+  },
+  "observed": {
+    "generation": 1,
+    "state": "running",
+    "active_run_id": "run_01ARZ3NDEKTSV4RRFFQ69G5FAX",
+    "last_terminal_run_id": null,
+    "last_error": null,
+    "reconciled_at": "2026-08-11T03:11:02Z"
+  }
+}

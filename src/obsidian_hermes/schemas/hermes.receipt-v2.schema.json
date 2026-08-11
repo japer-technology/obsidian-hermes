@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.obsidian-hermes.dev/v2/hermes.receipt.json",
+  "title": "hermes.receipt/v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_version",
+    "receipt_id",
+    "trace_id",
+    "command_id",
+    "run_id",
+    "step_id",
+    "idempotency_key",
+    "status",
+    "completed_at",
+    "outputs",
+    "content_hash"
+  ],
+  "properties": {
+    "schema": {"const": "hermes.receipt/v2"},
+    "schema_version": {"const": 2},
+    "receipt_id": {"$ref": "common.schema.json#/$defs/receiptId"},
+    "trace_id": {"$ref": "common.schema.json#/$defs/traceId"},
+    "command_id": {"$ref": "common.schema.json#/$defs/commandId"},
+    "run_id": {
+      "oneOf": [{"$ref": "common.schema.json#/$defs/runId"}, {"type": "null"}]
+    },
+    "step_id": {"$ref": "common.schema.json#/$defs/catalogueId"},
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "status": {
+      "enum": [
+        "completed",
+        "deduplicated",
+        "failed",
+        "blocked",
+        "cancelled",
+        "dead_letter",
+        "superseded"
+      ]
+    },
+    "completed_at": {"$ref": "common.schema.json#/$defs/rfc3339Timestamp"},
+    "outputs": {
+      "type": "array",
+      "items": {"$ref": "common.schema.json#/$defs/vaultPath"},
+      "maxItems": 256,
+      "uniqueItems": true
+    },
+    "content_hash": {
+      "oneOf": [{"$ref": "common.schema.json#/$defs/sha256"}, {"type": "null"}]
+    }
+  }
+}

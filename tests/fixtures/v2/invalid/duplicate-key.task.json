@@ -1,0 +1,5 @@
+{
+  "schema": "hermes.task/v2",
+  "schema": "hermes.run/v2",
+  "schema_version": 2
+}

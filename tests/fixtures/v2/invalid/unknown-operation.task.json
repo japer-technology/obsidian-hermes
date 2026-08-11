@@ -1,0 +1,39 @@
+{
+  "schema": "hermes.task/v2",
+  "schema_version": 2,
+  "id": "task_01ARZ3NDEKTSV4RRFFQ69G5FAV",
+  "revision": 1,
+  "title": "Unsupported work",
+  "desired_state": "ready",
+  "operation": "action.execute",
+  "mode": "execute",
+  "priority": 50,
+  "created_at": "2026-08-11T03:09:00Z",
+  "requested_by": "user:local-owner",
+  "project_ref": "architecture",
+  "agent_profile": "researcher",
+  "goal": "This operation must fail closed.",
+  "context_refs": [],
+  "context_roots": [],
+  "skills": [],
+  "inputs": [],
+  "permissions": {
+    "network": {"mode": "deny", "destinations": []},
+    "read": [],
+    "write": ["ReadWrite/06 Outputs/**"],
+    "external_effects": "deny",
+    "destructive_write": "deny"
+  },
+  "budgets": {
+    "max_runtime_minutes": 1,
+    "max_input_tokens": 1,
+    "max_output_tokens": 1,
+    "max_network_requests": 0
+  },
+  "approval_policy": {"required_before": []},
+  "completion_criteria": ["No effect occurs."],
+  "output": {
+    "kind": "source-summary",
+    "path": "ReadWrite/06 Outputs/Reports/"
+  }
+}
