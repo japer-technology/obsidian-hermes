@@ -1,4 +1,10 @@
-# Deek Seek Suggestions
+# DeepSeek Suggestions
+
+> [!NOTE]
+> This is a non-normative research artifact retained for design provenance.
+> Recommendations must be validated before adoption and do not override the
+> [project overview](../overview.md) or
+> [runtime specification](../specification/v1.0.md).
 
 A genuine operating system for turning an Obsidian vault into a structured, self‑executing knowledge engine on top of Hermes cron. The separation of control plane, operational loops, and synthesis loops, the rigorous lease protocols, and the security boundaries are all good.
 

@@ -1,5 +1,11 @@
 # Obsidian Hermes
 
+> [!NOTE]
+> This is the detailed project overview. See the repository
+> [README](../README.md) for current delivery status and
+> [runtime specification](specification/v1.0.md) for the versioned design
+> baseline.
+
 Obsidian Hermes turns an Obsidian vault into a local command centre, persistent memory, workflow engine, and continuously maintained knowledge system for Hermes Agent.
 
 Instead of treating Obsidian as a passive note-taking application, this project uses Markdown files as the interface between the user and Hermes. Commands, approvals, projects, knowledge, results, routines, and execution history all remain visible, editable, local, and auditable.
@@ -765,7 +771,9 @@ The project is operational when:
 
 ## Project Status
 
-This repository currently defines the architecture and runtime specification for an Obsidian-based Hermes Agent control system.
+This repository currently defines the architecture and runtime specification
+for an Obsidian-based Hermes Agent control system. It does not yet contain a
+runnable implementation, reference vault, control bridge, or gate scripts.
 
 The first implementation milestone is a complete local workflow:
 
@@ -780,6 +788,9 @@ Inbox capture
 ```
 
 ## Contributing
+
+See the repository [contribution guide](../CONTRIBUTING.md) for the review
+process and pull request requirements.
 
 Contributions should preserve the project’s core guarantees:
 

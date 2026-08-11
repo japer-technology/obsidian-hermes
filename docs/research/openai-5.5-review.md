@@ -1,5 +1,10 @@
 # OpenAI 5.5 Deep Research: Critical Review of the Hermes Obsidian Specification
 
+> [!NOTE]
+> This is a non-normative research artifact retained for design provenance.
+> Citation markers come from the source research tool and may not resolve in
+> GitHub. Recommendations must be validated before adoption.
+
 ## Executive summary
 
 The uploaded material is not actually unspecified in practice: it is a detailed technical architecture and operating specification for a local-first automation system in which Obsidian acts as the desired-state interface, approvals surface and audit log; a privileged non-LLM bridge reconciles routine notes into native Hermes cron jobs; and Hermes cron executes bounded workers against a Markdown vault. The document is ambitious, unusually thorough, and materially grounded in Hermes platform behaviour such as fresh-session cron runs, disabled cron recursion within cron jobs, workdir-based serialisation, script-gated jobs, and timezone/model pinning considerations. That gives it a strong conceptual base. fileciteturn0file0 citeturn3view0turn3view1turn3view2turn3view3turn3view4turn3view5
