@@ -1,9 +1,7 @@
 # Obsidian Hermes
 
 > [!WARNING]
-> Obsidian Hermes is pre-alpha. The deterministic schema/store kernel and a
-> validation-only bridge are scaffolded, but worker dispatch is intentionally
-> disabled and Phase One is not yet conformant or safe for real execution.
+> This is pre-alpha. It is not yet conformant or safe for real execution.
 
 Obsidian Hermes is a local-first operating environment that uses an Obsidian
 vault as the command centre, durable memory, workflow interface, and audit log
