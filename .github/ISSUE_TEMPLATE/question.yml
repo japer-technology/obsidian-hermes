@@ -1,0 +1,29 @@
+name: Project question
+description: Ask for clarification about the Obsidian Hermes design.
+title: "[question] "
+labels:
+  - question
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What would you like clarified?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Link relevant documentation and explain what you have already tried.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I read the project README and documentation index.
+          required: true
+        - label: I searched existing issues for the same question.
+          required: true
+        - label: This question does not disclose a vulnerability or private data.
+          required: true

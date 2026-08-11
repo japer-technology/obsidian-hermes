@@ -1,0 +1,66 @@
+name: Design proposal
+description: Propose a capability or a material architecture or schema change.
+title: "[proposal] "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Read the project overview and runtime specification before proposing a
+        change. The project is still in the design phase.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user or operational problem needs to be solved?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Proposed outcome
+      description: Describe the desired behaviour, not only a preferred implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: design-impact
+    attributes:
+      label: Design impact
+      description: Which documents, schemas, operations, or state transitions change?
+    validations:
+      required: true
+  - type: textarea
+    id: safety
+    attributes:
+      label: Permissions and safety
+      description: Describe trust boundaries, approvals, external effects, and idempotency.
+    validations:
+      required: true
+  - type: textarea
+    id: recovery
+    attributes:
+      label: Failure and recovery
+      description: How can the change fail, recover, and remain auditable?
+    validations:
+      required: true
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility and migration
+      description: What existing documents or future implementations could be affected?
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I read the canonical overview and runtime specification.
+          required: true
+        - label: I searched existing issues for a similar proposal.
+          required: true
+        - label: This proposal preserves local-first storage and human control.
+          required: true

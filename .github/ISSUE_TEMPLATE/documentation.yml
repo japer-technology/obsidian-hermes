@@ -1,0 +1,40 @@
+name: Documentation correction
+description: Report unclear, conflicting, outdated, or incorrect documentation.
+title: "[docs] "
+labels:
+  - documentation
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve the documentation. Report security-sensitive
+        problems privately through the repository's Security tab.
+  - type: input
+    id: location
+    attributes:
+      label: Document location
+      description: Link to the file, heading, or line range.
+      placeholder: docs/specification/v1.0.md#section
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is unclear, conflicting, outdated, or incorrect?
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Suggested correction
+      description: What outcome or wording would resolve the problem?
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues for the same documentation problem.
+          required: true
+        - label: This report does not disclose a security vulnerability or private data.
+          required: true
