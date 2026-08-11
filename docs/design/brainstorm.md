@@ -2,7 +2,7 @@
 
 This document is a thinking space, not a specification. The
 [project overview](../overview.md) and
-[runtime specification](../specification/v1.0.md) already describe *what* the
+[runtime specification](../specification/v2.0.md) already describe *what* the
 system is and *how* it runs.
 This file asks a different question:
 
@@ -163,5 +163,5 @@ idea itself.
 *This is a brainstorm and is intentionally exploratory. Anything here that
 survives scrutiny should graduate into the
 [project overview](../overview.md), the
-[runtime specification](../specification/v1.0.md), or a concrete issue;
+[runtime specification](../specification/v2.0.md), or a concrete issue;
 anything that does not can simply be deleted.*
