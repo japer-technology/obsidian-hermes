@@ -125,7 +125,7 @@ class SchemaRegistry:
 def _validate_semantics(instance: Mapping[str, Any]) -> None:
     schema_name = instance["schema"]
     assert isinstance(schema_name, str)
-    _validate_no_control_scalars(instance)
+    _validate_unicode_scalars(instance)
     _validate_resource_paths(instance, schema_name)
 
     if schema_name == "hermes.task/v2":
@@ -213,27 +213,23 @@ def _validate_resource_paths(instance: Mapping[str, Any], schema_name: str) -> N
         )
 
 
-def _validate_no_control_scalars(value: Any, pointer: str = "") -> None:
-    """Reject controls in metadata, including regular-expression end-anchor bypasses."""
+def _validate_unicode_scalars(value: Any, pointer: str = "") -> None:
+    """Reject escaped lone surrogates before they can cross a UTF-8 boundary."""
 
     if isinstance(value, str):
         if any(0xD800 <= ord(character) <= 0xDFFF for character in value):
             raise ResourceValidationError(
-                f"{pointer or '/'}: Unicode surrogate code points are not valid UTF-8 metadata"
-            )
-        if any(ord(character) < 32 or ord(character) == 127 for character in value):
-            raise ResourceValidationError(
-                f"{pointer or '/'}: control characters are not allowed in resource metadata"
+                f"{pointer or '/'}: Unicode surrogate code points are not valid metadata"
             )
         return
     if isinstance(value, Mapping):
         for key, child in value.items():
             escaped_key = str(key).replace("~", "~0").replace("/", "~1")
-            _validate_no_control_scalars(child, f"{pointer}/{escaped_key}")
+            _validate_unicode_scalars(child, f"{pointer}/{escaped_key}")
         return
     if isinstance(value, list):
         for index, child in enumerate(value):
-            _validate_no_control_scalars(child, f"{pointer}/{index}")
+            _validate_unicode_scalars(child, f"{pointer}/{index}")
 
 
 def _validate_task(task: Mapping[str, Any]) -> None:

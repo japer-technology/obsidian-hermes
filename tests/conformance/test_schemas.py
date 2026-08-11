@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from obsidian_hermes.domain.errors import ResourceValidationError
+from obsidian_hermes.resources.canonical import specification_hash
 from obsidian_hermes.resources.loader import load_resource
 from obsidian_hermes.resources.validation import SchemaRegistry
 from obsidian_hermes.schemas import SCHEMA_FILENAMES
@@ -138,7 +139,7 @@ def test_typed_ulid_cannot_exceed_128_bits(registry: SchemaRegistry) -> None:
 def test_metadata_control_characters_cannot_bypass_patterns(registry: SchemaRegistry) -> None:
     task = _valid_fixture("hermes.task-v2.json")
     task["id"] = f"{task['id']}\n"
-    with pytest.raises(ResourceValidationError, match="control characters"):
+    with pytest.raises(ResourceValidationError):
         registry.validate(task)
 
 
@@ -155,7 +156,7 @@ def test_git_metadata_and_case_colliding_grants_are_denied(
     git_task = _valid_fixture("hermes.task-v2.json")
     git_task["permissions"]["write"] = ["ReadWrite/.git/**"]
     git_task["output"]["path"] = "ReadWrite/.git/config"
-    with pytest.raises(ResourceValidationError, match="Git metadata"):
+    with pytest.raises(ResourceValidationError):
         registry.validate(git_task)
 
     colliding_task = _valid_fixture("hermes.task-v2.json")

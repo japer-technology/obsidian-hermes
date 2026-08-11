@@ -310,11 +310,12 @@ CREATE TABLE approvals (
             AND attestation_signature IS NULL)
         OR
         (decision IN ('approved', 'rejected')
-            AND decided_by IS NOT NULL
+            AND length(decided_by) > 0
             AND decided_at IS NOT NULL
-            AND attestation_method IS NOT NULL
-            AND attestation_key_id IS NOT NULL
-            AND attestation_signature IS NOT NULL)
+            AND attestation_method IN ('local-bridge', 'signature')
+            AND length(attestation_key_id) > 0
+            AND length(attestation_signature) > 0
+            AND (action_class <> 'routine_change' OR attestation_method = 'signature'))
     ),
     CHECK (
         (subject_type = 'task-plan'
@@ -430,7 +431,15 @@ CREATE TABLE receipts (
     CHECK (receipt_kind = 'terminal' OR run_id IS NOT NULL),
     CHECK (
         receipt_kind <> 'terminal'
-        OR status IN ('completed', 'blocked', 'failed', 'cancelled', 'dead_letter', 'superseded')
+        OR status IN (
+            'completed',
+            'deduplicated',
+            'blocked',
+            'failed',
+            'cancelled',
+            'dead_letter',
+            'superseded'
+        )
     ),
     FOREIGN KEY (command_id) REFERENCES commands(command_id)
         ON UPDATE RESTRICT ON DELETE RESTRICT,
@@ -467,7 +476,10 @@ WHEN
         FROM receipts
         WHERE receipts.command_id = NEW.command_id
           AND receipts.receipt_kind = 'terminal'
-          AND receipts.status = NEW.state
+          AND (
+              receipts.status = NEW.state
+              OR (NEW.state = 'completed' AND receipts.status = 'deduplicated')
+          )
     )
 BEGIN
     SELECT RAISE(ABORT, 'terminal commands require a terminal receipt');
@@ -478,6 +490,15 @@ BEFORE INSERT ON commands
 WHEN NEW.state IN ('completed', 'blocked', 'failed', 'cancelled', 'dead_letter', 'superseded')
 BEGIN
     SELECT RAISE(ABORT, 'new commands cannot start in a terminal state');
+END;
+
+CREATE TRIGGER commands_terminal_state_is_immutable
+BEFORE UPDATE OF state ON commands
+WHEN
+    OLD.state IN ('completed', 'blocked', 'failed', 'cancelled', 'dead_letter', 'superseded')
+    AND NEW.state <> OLD.state
+BEGIN
+    SELECT RAISE(ABORT, 'terminal command state is immutable');
 END;
 
 CREATE TABLE events (

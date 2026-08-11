@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS events;
 
 DROP TRIGGER IF EXISTS commands_require_terminal_receipt;
 DROP TRIGGER IF EXISTS commands_cannot_start_terminal;
+DROP TRIGGER IF EXISTS commands_terminal_state_is_immutable;
 DROP TRIGGER IF EXISTS receipts_are_immutable_on_delete;
 DROP TRIGGER IF EXISTS receipts_are_immutable_on_update;
 DROP INDEX IF EXISTS receipts_one_terminal_per_command;
@@ -33,6 +34,8 @@ DROP TABLE IF EXISTS runs;
 DROP TRIGGER IF EXISTS commands_specification_is_immutable;
 DROP TABLE IF EXISTS commands;
 
+DROP TRIGGER IF EXISTS resources_specification_is_immutable;
 DROP INDEX IF EXISTS resources_one_current_path;
 DROP INDEX IF EXISTS resources_one_current_generation;
+DROP INDEX IF EXISTS resources_generation_hash;
 DROP TABLE IF EXISTS resources;

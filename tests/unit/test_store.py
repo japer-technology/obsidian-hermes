@@ -610,7 +610,7 @@ def test_approval_subject_is_immutable_and_decision_is_one_way(
             """
             UPDATE approvals
             SET decision = 'approved', decided_by = 'user:local-owner',
-                decided_at = ?, attestation_method = 'local-action',
+                decided_at = ?, attestation_method = 'local-bridge',
                 attestation_key_id = 'bridge-key', attestation_signature = 'signed'
             WHERE approval_id = ?
             """,
@@ -709,6 +709,14 @@ def test_terminal_state_requires_a_terminal_receipt(database: sqlite3.Connection
     assert database.execute(
         "SELECT state FROM commands WHERE command_id = ?", (command_id,)
     ).fetchone()[0] == "completed"
+
+    with pytest.raises(
+        sqlite3.IntegrityError, match="terminal command"
+    ), transaction(database):
+        database.execute(
+            "UPDATE commands SET state = 'failed', updated_at = ? WHERE command_id = ?",
+            (NOW, command_id),
+        )
 
 
 def test_command_cannot_be_inserted_in_a_terminal_state(database: sqlite3.Connection) -> None:
