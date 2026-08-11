@@ -3,8 +3,9 @@
 > [!NOTE]
 > This is the detailed project overview. See the repository
 > [README](../README.md) for current delivery status and
-> [runtime specification](specification/v1.0.md) for the versioned design
-> baseline.
+> [runtime specification v2.0](specification/v2.0.md) for the current
+> versioned design baseline. The command, routine, and path examples below
+> describe the earlier cron-first model; where they differ, v2.0 is normative.
 
 Obsidian Hermes turns an Obsidian vault into a local command centre, persistent memory, workflow engine, and continuously maintained knowledge system for Hermes Agent.
 

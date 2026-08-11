@@ -43,7 +43,8 @@ Outputs, receipts, and updated knowledge
 | Document | Status | Purpose |
 | --- | --- | --- |
 | [Project overview](docs/overview.md) | Canonical | Concepts, workflows, and intended capabilities |
-| [Runtime specification v1.0](docs/specification/v1.0.md) | Canonical | Detailed schemas, worker contracts, and safety requirements |
+| [Runtime specification v2.0](docs/specification/v2.0.md) | Canonical | Current schemas, control-plane contracts, and safety requirements |
+| [Runtime specification v1.0](docs/specification/v1.0.md) | Superseded | Historical cron-first baseline and v2 migration source |
 | [Design brainstorm](docs/design/brainstorm.md) | Exploratory | Product direction, risks, and possible delivery sequence |
 | [Research notes](docs/research/) | Non-normative | External reviews retained as design input |
 

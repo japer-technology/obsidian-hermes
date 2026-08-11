@@ -7,9 +7,11 @@ historical material.
 
 - [Project overview](overview.md) explains the product model, major workflows,
   security boundaries, and roadmap.
-- [Runtime specification v1.0](specification/v1.0.md) defines the current
+- [Runtime specification v2.0](specification/v2.0.md) defines the current
   detailed design baseline for schemas, state transitions, workers, and
   operational controls.
+- [Runtime specification v1.0](specification/v1.0.md) is the superseded
+  cron-first baseline retained for migration and design history.
 
 Canonical does not mean implemented. The repository remains in the design
 phase, and the root [README](../README.md) is the source of truth for current
@@ -24,6 +26,8 @@ delivery status.
 
 - [DeepSeek review](research/deepseek-review.md)
 - [OpenAI 5.5 review](research/openai-5.5-review.md)
+- [Definitive use cases and architecture](research/definition.md)
+- [Secure Obsidian vault access](research/obsidian-vaults.md)
 
 Research documents are retained for provenance and context. They may contain
 unverified recommendations or source-tool citation markers and do not override
