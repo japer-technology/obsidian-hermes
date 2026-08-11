@@ -1,1 +1,0 @@
-# Hermes + Obsidian + LM Studio
