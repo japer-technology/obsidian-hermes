@@ -1,0 +1,19 @@
+# Operating-system files
+.DS_Store
+Thumbs.db
+
+# Editor-local files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Obsidian's machine-local workspace state
+**/.obsidian/workspace*.json
+**/.trash/
