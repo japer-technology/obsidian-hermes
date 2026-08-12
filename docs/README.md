@@ -5,6 +5,12 @@ historical material.
 
 ## Canonical documents
 
+- [Obsidian Control Room](product/control-room.md) defines the primary product
+  experience: capture, queue, routines, runs, model/cost controls, approvals,
+  activity, a local Vault API, and runtime-neutral adapters.
+- [Markdown and Git architecture](architecture/markdown-and-git.md) defines the
+  state-ownership and reconstruction invariants across Markdown, Git, and
+  SQLite.
 - [Project overview](overview.md) explains the product model, major workflows,
   security boundaries, and roadmap.
 - [Runtime specification v2.0](specification/v2.0.md) defines the current
@@ -16,8 +22,8 @@ historical material.
   scaffold to v2.0 and lists the fail-closed runtime gaps.
 
 Canonical does not mean implemented. The repository now contains a pre-alpha,
-validation-only scaffold; the root [README](../README.md) is the source of
-truth for current delivery status.
+validation-only runtime scaffold and a Markdown experience preview; the root
+[README](../README.md) is the source of truth for current delivery status.
 
 ## Exploratory documents
 

@@ -57,3 +57,13 @@ permitted_models = []
 [security]
 network_enforcement = "unconfigured"
 attestation_key_ref = "secret://bridge/approval-signing-key"
+
+# Read-only local API consumed by the Obsidian control-room plugin. The bearer
+# token, when used, comes from OBSIDIAN_HERMES_CONTROL_ROOM_TOKEN and is never
+# persisted in this file or the vault.
+[control_room]
+bind_host = "127.0.0.1"
+port = 27124
+max_items_per_collection = 250
+max_response_bytes = 1048576
+runtime_profiles = { researcher = "hermes:default", operator = "openclaw:default" }

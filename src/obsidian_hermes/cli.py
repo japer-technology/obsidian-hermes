@@ -13,7 +13,22 @@ from typing import Any
 from obsidian_hermes import __version__
 from obsidian_hermes.bridge import ValidationOnlyBridge
 from obsidian_hermes.config import load_config
-from obsidian_hermes.domain.errors import HermesError
+from obsidian_hermes.control_room.api import (
+    ControlRoomApi,
+    bearer_token_from_environment,
+    create_server,
+)
+from obsidian_hermes.control_room.runtimes import (
+    NoRepositoryProvenance,
+    validation_only_runtime_catalog,
+)
+from obsidian_hermes.control_room.snapshot import (
+    ControlRoomSnapshotAssembler,
+    SnapshotLimits,
+)
+from obsidian_hermes.control_room.store_overlay import SqliteStoreOverlayReader
+from obsidian_hermes.control_room.vault import FilesystemVaultStateReader
+from obsidian_hermes.domain.errors import ConfigurationError, HermesError
 from obsidian_hermes.migration import classify_operation
 from obsidian_hermes.resources.loader import load_resource
 from obsidian_hermes.resources.validation import SchemaRegistry
@@ -57,6 +72,15 @@ def _parser() -> argparse.ArgumentParser:
     bridge_run = bridge_commands.add_parser("run")
     _add_config(bridge_run)
     bridge_run.add_argument("--once", action="store_true", help="validate once and exit")
+
+    control_room = commands.add_parser(
+        "control-room", help="serve the read-only Obsidian control-room API"
+    )
+    control_room_commands = control_room.add_subparsers(
+        dest="control_room_command", required=True
+    )
+    control_room_serve = control_room_commands.add_parser("serve")
+    _add_config(control_room_serve)
 
     migration = commands.add_parser("migrate-v1", help="plan a non-mutating v1 migration")
     migration_commands = migration.add_subparsers(dest="migration_command", required=True)
@@ -149,6 +173,57 @@ def _dispatch(args: argparse.Namespace) -> int:
         if args.once:
             return _report_scan(bridge)
         bridge.run_forever()
+        return 0
+
+    if args.command == "control-room" and args.control_room_command == "serve":
+        config = load_config(args.config)
+        if not config.bridge.validation_only or config.bridge.dispatch_enabled:
+            raise ConfigurationError(
+                "control-room scaffold requires validation-only bridge mode"
+            )
+        settings = config.control_room
+        assembler = ControlRoomSnapshotAssembler(
+            vault=FilesystemVaultStateReader(
+                {
+                    "ReadWrite": config.vault.read_write_root,
+                    "ReadOnly": config.vault.read_only_root,
+                },
+                runtime_by_agent_profile=settings.runtime_profiles,
+                max_resource_bytes=config.limits.max_resource_bytes,
+                max_scanned_entries=config.limits.max_files_per_scan,
+            ),
+            store=SqliteStoreOverlayReader(config.bridge.database_path),
+            runtimes=validation_only_runtime_catalog(
+                hermes_profile=config.hermes.profile,
+                include_openclaw=True,
+            ),
+            repository=NoRepositoryProvenance(),
+            limits=SnapshotLimits(
+                max_items_per_collection=settings.max_items_per_collection,
+                max_response_bytes=settings.max_response_bytes,
+            ),
+        )
+        api = ControlRoomApi(
+            assembler,
+            bearer_token=bearer_token_from_environment(),
+        )
+        server = create_server(api, host=settings.bind_host, port=settings.port)
+        url_host = (
+            f"[{settings.bind_host}]" if ":" in settings.bind_host else settings.bind_host
+        )
+        _emit(
+            {
+                "api": "obsidian-hermes.control-room/v1",
+                "url": f"http://{url_host}:{settings.port}/api/v1/snapshot",
+                "auth": "required" if api.auth_required else "disabled",
+                "validation_only": True,
+                "dispatch_enabled": False,
+            }
+        )
+        try:
+            server.serve_forever()
+        finally:
+            server.server_close()
         return 0
 
     if args.command == "migrate-v1" and args.migration_command == "plan":

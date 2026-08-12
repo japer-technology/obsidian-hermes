@@ -5,14 +5,14 @@ build-backend = "hatchling.build"
 [project]
 name = "obsidian-hermes"
 version = "0.1.0a0"
-description = "Deterministic control bridge for the Obsidian Hermes v2 runtime"
+description = "Markdown-first Obsidian control room and deterministic bridge for agent runtimes"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { file = "LICENSE" }
 authors = [
   { name = "Obsidian Hermes contributors" },
 ]
-keywords = ["hermes", "obsidian", "automation", "control-plane"]
+keywords = ["agents", "automation", "git", "hermes", "markdown", "obsidian"]
 classifiers = [
   "Development Status :: 2 - Pre-Alpha",
   "License :: OSI Approved :: MIT License",
@@ -50,8 +50,11 @@ packages = ["src/obsidian_hermes"]
 
 [tool.hatch.build.targets.sdist]
 include = [
+  "/apps",
   "/config",
+  "/deploy",
   "/docs",
+  "/reference-vault",
   "/src",
   "/tests",
   "/CONTRIBUTING.md",

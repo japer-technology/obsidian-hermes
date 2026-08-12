@@ -58,6 +58,13 @@ permitted_models = []
 [security]
 network_enforcement = "unconfigured"
 attestation_key_ref = "secret://bridge/test-key"
+
+[control_room]
+bind_host = "127.0.0.1"
+port = 27124
+max_items_per_collection = 250
+max_response_bytes = 1048576
+runtime_profiles = {{ researcher = "hermes:default", operator = "openclaw:default" }}
 ''',
         encoding="utf-8",
     )
@@ -72,6 +79,8 @@ def test_loads_validation_only_config(tmp_path: Path) -> None:
     assert config.bridge.validation_only
     assert not config.bridge.dispatch_enabled
     assert config.hermes.timezone == "Etc/UTC"
+    assert config.control_room.bind_host == "127.0.0.1"
+    assert config.control_room.runtime_profiles["operator"] == "openclaw:default"
 
 
 def test_refuses_dispatch_in_validation_only_mode(tmp_path: Path) -> None:
@@ -89,4 +98,16 @@ def test_invalid_timezone_is_a_configuration_error(tmp_path: Path) -> None:
     path.write_text(content, encoding="utf-8")
 
     with pytest.raises(ConfigurationError, match="IANA timezone"):
+        load_config(path)
+
+
+def test_control_room_must_bind_to_a_literal_loopback_address(tmp_path: Path) -> None:
+    path = tmp_path / "hermes.toml"
+    _write_config(path)
+    content = path.read_text(encoding="utf-8").replace(
+        'bind_host = "127.0.0.1"', 'bind_host = "0.0.0.0"'
+    )
+    path.write_text(content, encoding="utf-8")
+
+    with pytest.raises(ConfigurationError, match="loopback"):
         load_config(path)

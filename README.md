@@ -3,14 +3,14 @@
 > [!WARNING]
 > This is pre-alpha. It is not yet conformant or safe for real execution.
 
-Obsidian Hermes is a local-first operating environment that uses an Obsidian
-vault as the command centre, durable memory, workflow interface, and audit log
-for Hermes Agent.
+Obsidian Hermes is a local-first, Obsidian-native control room for personal
+agents. The vault is the primary interface and durable memory; Hermes,
+OpenClaw, and future runtimes connect behind typed adapters.
 
-The design keeps commands, approvals, evidence, project state, outputs, and
-execution receipts in readable Markdown. Hermes performs bounded work through
-scheduled workers, while a deterministic control bridge reconciles desired
-routine definitions with the runtime.
+The design keeps tasks, routines, approvals, evidence, project state, outputs,
+and execution receipts in readable Markdown. Git provides shared provenance,
+review, and recovery across humans and agents. A deterministic bridge handles
+the short-lived transactional coordination that files cannot safely provide.
 
 ## Architecture
 
@@ -41,6 +41,8 @@ Outputs, receipts, and updated knowledge
 
 | Document | Status | Purpose |
 | --- | --- | --- |
+| [Obsidian Control Room](docs/product/control-room.md) | Product target | Primary UX, local Vault API, costs, and multi-runtime adapters |
+| [Markdown and Git architecture](docs/architecture/markdown-and-git.md) | Canonical | Durable state, shared memory, and rebuildable coordination rules |
 | [Project overview](docs/overview.md) | Canonical | Concepts, workflows, and intended capabilities |
 | [Runtime specification v2.0](docs/specification/v2.0.md) | Canonical | Current schemas, control-plane contracts, and safety requirements |
 | [Runtime specification v1.0](docs/specification/v1.0.md) | Superseded | Historical cron-first baseline and v2 migration source |
@@ -62,9 +64,10 @@ toolchain and includes:
 - a validation-only bridge and CLI that cannot dispatch workers;
 - the three-zone reference vault, deployment examples, and CI checks.
 
-The Hermes discovery adapter, authenticated approvals and dispatch, hardened
-file opens, effective Docker mount inspection, network enforcement, workers,
-projections, backup/restore, and lifecycle recovery remain implementation work.
+The Obsidian plugin, local Vault API, runtime adapters, live subscriptions,
+model/pricing catalogue, Hermes discovery adapter, authenticated approvals and
+dispatch, workers, projections, backup/restore, and lifecycle recovery remain
+implementation work.
 See [implementation status](docs/implementation-status.md) for the exact
 boundary.
 

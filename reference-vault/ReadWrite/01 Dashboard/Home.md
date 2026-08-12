@@ -1,17 +1,19 @@
-# Hermes dashboard
+# Obsidian Hermes
 
 > [!NOTE]
-> Reference placeholder. The bridge and daily brief may project linked status
-> here only after the deployment passes validation and boundary tests.
+> This reference vault is an experience preview. Open [[Control Room]] to see
+> the intended Obsidian-native interface. Live controls remain disabled until
+> the deployment passes validation and boundary tests.
 
-## Work
+## Start here
 
-- Ready and proposed tasks
-- Active, blocked, and recently completed runs
-- Decisions and approvals requiring human attention
+- [[Control Room]] — attention, active work, schedules, runtime health, spend
+- [[Runtime Registry]] — desired multi-runtime configuration
+- [[Model and Pricing Catalog]] — profiles, budgets, and price-data rules
+- [[Git Memory]] — shared human/agent provenance and review
 
-## Health
+## Current delivery boundary
 
-- Bridge, gateway, scheduler, queue, mount, and backup status
-- Drift, dead letters, and stale projections
-
+These notes use ordinary Markdown so the vault remains legible without a
+plugin. Interactive cards, live subscriptions, and runtime controls are product
+targets, not capabilities of the current validation-only bridge.

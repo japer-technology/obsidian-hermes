@@ -1,0 +1,424 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://obsidian-hermes.local/contracts/control-room-snapshot-v1.schema.json",
+  "title": "Obsidian Hermes control-room snapshot v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "api_version",
+    "generated_at",
+    "status",
+    "state_model",
+    "freshness",
+    "runtimes",
+    "models",
+    "tasks",
+    "routines",
+    "queue",
+    "runs",
+    "approvals",
+    "activity",
+    "repository",
+    "warnings",
+    "truncated"
+  ],
+  "properties": {
+    "schema": { "const": "obsidian-hermes.control-room-snapshot/v1" },
+    "api_version": { "const": 1 },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "status": { "enum": ["validation_only", "ready", "degraded"] },
+    "state_model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonical", "coordination_overlay", "history", "dispatch_enabled"],
+      "properties": {
+        "canonical": { "const": "markdown" },
+        "coordination_overlay": { "const": "sqlite" },
+        "history": { "const": "git" },
+        "dispatch_enabled": { "const": false }
+      }
+    },
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canonical_markdown_scanned_at",
+        "store_overlay_observed_at",
+        "git_observed_at",
+        "projection_status"
+      ],
+      "properties": {
+        "canonical_markdown_scanned_at": { "type": "string", "format": "date-time" },
+        "store_overlay_observed_at": { "$ref": "#/$defs/nullableDateTime" },
+        "git_observed_at": { "$ref": "#/$defs/nullableDateTime" },
+        "projection_status": { "enum": ["current", "partial", "stale", "not_required"] }
+      }
+    },
+    "runtimes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/runtime" }
+    },
+    "models": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/modelWithRuntime" }
+    },
+    "tasks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/task" }
+    },
+    "routines": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/routine" }
+    },
+    "queue": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/queueItem" }
+    },
+    "runs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/run" }
+    },
+    "approvals": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/approval" }
+    },
+    "activity": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/activity" }
+    },
+    "repository": { "$ref": "#/$defs/repository" },
+    "warnings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/warning" }
+    },
+    "truncated": { "type": "boolean" }
+  },
+  "$defs": {
+    "nullableString": { "type": ["string", "null"] },
+    "nullableNumber": { "type": ["number", "null"] },
+    "nullableInteger": { "type": ["integer", "null"] },
+    "nullableBoolean": { "type": ["boolean", "null"] },
+    "nullableDateTime": {
+      "anyOf": [
+        { "type": "string", "format": "date-time" },
+        { "type": "null" }
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "canonical_note_path", "durable", "specification_hash"],
+      "properties": {
+        "kind": { "enum": ["markdown", "sqlite-overlay"] },
+        "canonical_note_path": { "$ref": "#/$defs/nullableString" },
+        "durable": { "type": "boolean" },
+        "specification_hash": { "$ref": "#/$defs/nullableString" }
+      }
+    },
+    "fieldSources": {
+      "type": "object",
+      "additionalProperties": {
+        "enum": ["markdown", "sqlite-overlay", "resolved-overlay", "markdown-validated-overlay"]
+      }
+    },
+    "projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "canonical_note_path", "observed_at"],
+      "properties": {
+        "status": { "enum": ["current", "missing", "stale"] },
+        "canonical_note_path": { "$ref": "#/$defs/nullableString" },
+        "observed_at": { "$ref": "#/$defs/nullableDateTime" }
+      }
+    },
+    "pricing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["currency", "unit", "input", "cached_input", "output", "status", "as_of", "source"],
+      "properties": {
+        "currency": { "type": "string" },
+        "unit": { "const": "per_1m_tokens" },
+        "input": { "$ref": "#/$defs/nullableNumber" },
+        "cached_input": { "$ref": "#/$defs/nullableNumber" },
+        "output": { "$ref": "#/$defs/nullableNumber" },
+        "status": { "enum": ["current", "stale", "unavailable"] },
+        "as_of": { "$ref": "#/$defs/nullableDateTime" },
+        "source": { "$ref": "#/$defs/nullableString" }
+      }
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model_id", "provider", "name", "display_name", "depths", "context_window_tokens", "pricing"],
+      "properties": {
+        "model_id": { "type": "string", "minLength": 1 },
+        "provider": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "display_name": { "type": "string", "minLength": 1 },
+        "depths": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "context_window_tokens": { "$ref": "#/$defs/nullableInteger" },
+        "pricing": { "$ref": "#/$defs/pricing" },
+        "runtime_id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "modelWithRuntime": {
+      "allOf": [
+        { "$ref": "#/$defs/model" },
+        {
+          "type": "object",
+          "required": ["runtime_id"],
+          "properties": { "runtime_id": { "type": "string", "minLength": 1 } }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runtime_id", "runtime_type", "display_name", "profile", "capabilities", "health", "validation_only", "models", "details"],
+      "properties": {
+        "runtime_id": { "type": "string", "minLength": 1 },
+        "runtime_type": { "type": "string", "minLength": 1 },
+        "display_name": { "type": "string", "minLength": 1 },
+        "profile": { "type": "string", "minLength": 1 },
+        "capabilities": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "health": { "enum": ["ready", "degraded", "offline", "unconfigured", "validation_only"] },
+        "validation_only": { "type": "boolean" },
+        "models": { "type": "array", "items": { "$ref": "#/$defs/model" } },
+        "details": { "type": "object" }
+      }
+    },
+    "modelSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "model", "depth", "source"],
+      "properties": {
+        "provider": { "$ref": "#/$defs/nullableString" },
+        "model": { "$ref": "#/$defs/nullableString" },
+        "depth": { "$ref": "#/$defs/nullableString" },
+        "source": { "type": "string" }
+      }
+    },
+    "taskQueue": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["command_id", "state", "attempt", "max_attempts", "not_before", "updated_at", "source"],
+      "properties": {
+        "command_id": { "type": "string" },
+        "state": { "type": "string" },
+        "attempt": { "type": "integer" },
+        "max_attempts": { "type": "integer" },
+        "not_before": { "type": "string" },
+        "updated_at": { "type": "string" },
+        "source": { "const": "sqlite-overlay" }
+      }
+    },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["task_id", "runtime_id", "title", "desired_state", "observed_state", "priority", "operation", "agent_profile", "model_selection", "budget", "queue", "canonical_note_path", "source_of_truth", "field_sources"],
+      "properties": {
+        "task_id": { "type": "string" },
+        "runtime_id": { "type": "string" },
+        "title": { "type": "string" },
+        "desired_state": { "type": "string" },
+        "observed_state": { "$ref": "#/$defs/nullableString" },
+        "priority": { "type": "integer" },
+        "operation": { "type": "string" },
+        "agent_profile": { "type": "string" },
+        "model_selection": { "$ref": "#/$defs/modelSelection" },
+        "budget": { "type": "object" },
+        "queue": { "$ref": "#/$defs/taskQueue" },
+        "canonical_note_path": { "type": "string" },
+        "source_of_truth": { "$ref": "#/$defs/source" },
+        "field_sources": { "$ref": "#/$defs/fieldSources" }
+      }
+    },
+    "routine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["routine_id", "runtime_id", "name", "desired_state", "observed_state", "schedule", "model_selection", "last_run", "canonical_note_path", "source_of_truth", "field_sources"],
+      "properties": {
+        "routine_id": { "type": "string" },
+        "runtime_id": { "type": "string" },
+        "name": { "type": "string" },
+        "desired_state": { "type": "string" },
+        "observed_state": { "$ref": "#/$defs/nullableString" },
+        "schedule": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["expression", "timezone", "next_run_at"],
+          "properties": {
+            "expression": { "type": "string" },
+            "timezone": { "type": "string" },
+            "next_run_at": { "$ref": "#/$defs/nullableDateTime" }
+          }
+        },
+        "model_selection": { "$ref": "#/$defs/modelSelection" },
+        "last_run": { "type": ["object", "null"] },
+        "canonical_note_path": { "type": "string" },
+        "source_of_truth": { "$ref": "#/$defs/source" },
+        "field_sources": { "$ref": "#/$defs/fieldSources" }
+      }
+    },
+    "queueItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command_id", "task_id", "runtime_id", "state", "priority", "not_before", "attempt", "max_attempts", "updated_at", "canonical_note_path", "source_of_truth", "field_sources"],
+      "properties": {
+        "command_id": { "type": "string" },
+        "task_id": { "type": "string" },
+        "runtime_id": { "type": "string" },
+        "state": { "type": "string" },
+        "priority": { "type": "integer" },
+        "not_before": { "type": "string" },
+        "attempt": { "type": "integer" },
+        "max_attempts": { "type": "integer" },
+        "updated_at": { "type": "string" },
+        "canonical_note_path": { "$ref": "#/$defs/nullableString" },
+        "source_of_truth": { "$ref": "#/$defs/source" },
+        "field_sources": { "$ref": "#/$defs/fieldSources" }
+      }
+    },
+    "runModel": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["provider", "name", "source"],
+      "properties": {
+        "provider": { "type": "string" },
+        "name": { "type": "string" },
+        "source": { "type": "string" }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input_tokens", "output_tokens", "network_requests"],
+      "properties": {
+        "input_tokens": { "type": "integer", "minimum": 0 },
+        "output_tokens": { "type": "integer", "minimum": 0 },
+        "network_requests": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "cost": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["estimated_usd", "actual_usd", "status"],
+      "properties": {
+        "estimated_usd": { "$ref": "#/$defs/nullableNumber" },
+        "actual_usd": { "$ref": "#/$defs/nullableNumber" },
+        "status": { "enum": ["estimated", "final", "unavailable"] }
+      }
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["run_id", "runtime_id", "task_id", "command_id", "trace_id", "state", "model", "usage", "cost", "created_at", "started_at", "finished_at", "canonical_note_path", "source_of_truth", "field_sources"],
+      "properties": {
+        "run_id": { "type": "string" },
+        "runtime_id": { "type": "string" },
+        "task_id": { "type": "string" },
+        "command_id": { "type": "string" },
+        "trace_id": { "type": "string" },
+        "state": { "type": "string" },
+        "model": { "$ref": "#/$defs/runModel" },
+        "usage": { "$ref": "#/$defs/usage" },
+        "cost": { "$ref": "#/$defs/cost" },
+        "created_at": { "type": "string" },
+        "started_at": { "$ref": "#/$defs/nullableString" },
+        "finished_at": { "$ref": "#/$defs/nullableString" },
+        "canonical_note_path": { "$ref": "#/$defs/nullableString" },
+        "related_task_note_path": { "$ref": "#/$defs/nullableString" },
+        "projection": { "$ref": "#/$defs/projection" },
+        "coordination_overlay": { "type": "object" },
+        "source_of_truth": { "$ref": "#/$defs/source" },
+        "field_sources": { "$ref": "#/$defs/fieldSources" }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approval_id", "runtime_id", "trace_id", "action_class", "risk_tier", "decision", "subject", "requested_at", "expires_at", "canonical_note_path", "source_of_truth", "field_sources"],
+      "properties": {
+        "approval_id": { "type": "string" },
+        "runtime_id": { "type": "string" },
+        "trace_id": { "type": "string" },
+        "action_class": { "type": "string" },
+        "risk_tier": { "type": "integer" },
+        "decision": { "type": "string" },
+        "subject": { "type": "object" },
+        "requested_at": { "type": "string" },
+        "expires_at": { "type": "string" },
+        "canonical_note_path": { "$ref": "#/$defs/nullableString" },
+        "related_note_path": { "$ref": "#/$defs/nullableString" },
+        "projection": { "$ref": "#/$defs/projection" },
+        "coordination_overlay": { "type": "object" },
+        "source_of_truth": { "$ref": "#/$defs/source" },
+        "field_sources": { "$ref": "#/$defs/fieldSources" }
+      }
+    },
+    "activity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event_id", "runtime_id", "occurred_at", "type", "outcome", "actor", "trace_id", "task_id", "run_id", "commit", "summary", "canonical_note_path", "source_of_truth", "field_sources"],
+      "properties": {
+        "event_id": { "type": "string" },
+        "runtime_id": { "type": "string" },
+        "occurred_at": { "type": "string" },
+        "type": { "type": "string" },
+        "outcome": { "type": "string" },
+        "actor": { "type": "string" },
+        "trace_id": { "type": "string" },
+        "task_id": { "$ref": "#/$defs/nullableString" },
+        "run_id": { "$ref": "#/$defs/nullableString" },
+        "commit": { "$ref": "#/$defs/nullableString" },
+        "summary": { "$ref": "#/$defs/nullableString" },
+        "canonical_note_path": { "$ref": "#/$defs/nullableString" },
+        "related_note_path": { "$ref": "#/$defs/nullableString" },
+        "projection": { "$ref": "#/$defs/projection" },
+        "coordination_overlay": { "type": "object" },
+        "source_of_truth": { "$ref": "#/$defs/source" },
+        "field_sources": { "$ref": "#/$defs/fieldSources" }
+      }
+    },
+    "lastCommit": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["sha", "summary", "author", "committed_at"],
+      "properties": {
+        "sha": { "type": "string" },
+        "summary": { "type": "string" },
+        "author": { "type": "string" },
+        "committed_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["available", "role", "head", "ref", "dirty", "ahead", "behind", "upstream_status", "last_commit", "observed_at"],
+      "properties": {
+        "available": { "type": "boolean" },
+        "role": { "const": "historical_shared_memory" },
+        "head": { "$ref": "#/$defs/nullableString" },
+        "ref": { "$ref": "#/$defs/nullableString" },
+        "dirty": { "$ref": "#/$defs/nullableBoolean" },
+        "ahead": { "$ref": "#/$defs/nullableInteger" },
+        "behind": { "$ref": "#/$defs/nullableInteger" },
+        "upstream_status": { "enum": ["known", "unavailable"] },
+        "last_commit": { "$ref": "#/$defs/lastCommit" },
+        "observed_at": { "$ref": "#/$defs/nullableDateTime" }
+      }
+    },
+    "warning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message", "path"],
+      "properties": {
+        "code": { "type": "string" },
+        "message": { "type": "string" },
+        "path": { "$ref": "#/$defs/nullableString" }
+      }
+    }
+  }
+}

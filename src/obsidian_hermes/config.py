@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import ipaddress
 import os
 import re
 import tomllib
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
+from types import MappingProxyType
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -75,6 +78,15 @@ class SecuritySettings:
 
 
 @dataclass(frozen=True, slots=True)
+class ControlRoomSettings:
+    bind_host: str
+    port: int
+    max_items_per_collection: int
+    max_response_bytes: int
+    runtime_profiles: Mapping[str, str]
+
+
+@dataclass(frozen=True, slots=True)
 class DeploymentConfig:
     schema_version: int
     executor_id: str
@@ -85,6 +97,7 @@ class DeploymentConfig:
     limits: LimitSettings
     capabilities: CapabilitySettings
     security: SecuritySettings
+    control_room: ControlRoomSettings
 
 
 def _only_keys(table: dict[str, Any], allowed: set[str], section: str) -> None:
@@ -160,6 +173,7 @@ def load_config(path: Path) -> DeploymentConfig:
             "limits",
             "capabilities",
             "security",
+            "control_room",
         },
         "",
     )
@@ -176,6 +190,7 @@ def load_config(path: Path) -> DeploymentConfig:
     limits_data = _table(document, "limits")
     capabilities_data = _table(document, "capabilities")
     security_data = _table(document, "security")
+    control_room_data = _table(document, "control_room")
 
     _only_keys(
         bridge_data,
@@ -221,6 +236,17 @@ def load_config(path: Path) -> DeploymentConfig:
         security_data,
         {"network_enforcement", "attestation_key_ref"},
         "security",
+    )
+    _only_keys(
+        control_room_data,
+        {
+            "bind_host",
+            "port",
+            "max_items_per_collection",
+            "max_response_bytes",
+            "runtime_profiles",
+        },
+        "control_room",
     )
 
     reconcile_interval = bridge_data.get("reconcile_interval_seconds")
@@ -328,6 +354,55 @@ def load_config(path: Path) -> DeploymentConfig:
     if bridge.dispatch_enabled and not capabilities.permitted_models:
         raise ConfigurationError("dispatch requires at least one exact permitted model pin")
 
+    bind_host = _string(control_room_data, "bind_host", "control_room")
+    try:
+        bind_address = ipaddress.ip_address(bind_host)
+    except ValueError as error:
+        raise ConfigurationError(
+            "[control_room].bind_host must be a literal loopback IP address"
+        ) from error
+    if not bind_address.is_loopback:
+        raise ConfigurationError("[control_room].bind_host must be a loopback address")
+    port = _positive_integer(control_room_data, "port", "control_room")
+    if port > 65_535:
+        raise ConfigurationError("[control_room].port must be between 1 and 65535")
+    max_items = _positive_integer(
+        control_room_data, "max_items_per_collection", "control_room"
+    )
+    if max_items > 2_000:
+        raise ConfigurationError(
+            "[control_room].max_items_per_collection must be at most 2000"
+        )
+    max_response_bytes = _positive_integer(
+        control_room_data, "max_response_bytes", "control_room"
+    )
+    if not 4_096 <= max_response_bytes <= 8_388_608:
+        raise ConfigurationError(
+            "[control_room].max_response_bytes must be between 4096 and 8388608"
+        )
+    raw_runtime_profiles = control_room_data.get("runtime_profiles")
+    if not isinstance(raw_runtime_profiles, dict):
+        raise ConfigurationError("[control_room].runtime_profiles must be a TOML table")
+    runtime_profiles: dict[str, str] = {}
+    for profile, runtime_id in raw_runtime_profiles.items():
+        if (
+            not isinstance(profile, str)
+            or re.fullmatch(r"[a-z][a-z0-9-]*", profile) is None
+            or not isinstance(runtime_id, str)
+            or re.fullmatch(r"[a-z][a-z0-9-]*:[a-z][a-z0-9-]*", runtime_id) is None
+        ):
+            raise ConfigurationError(
+                "[control_room].runtime_profiles must map profile slugs to runtime:profile ids"
+            )
+        runtime_profiles[profile] = runtime_id
+    control_room = ControlRoomSettings(
+        bind_host=str(bind_address),
+        port=port,
+        max_items_per_collection=max_items,
+        max_response_bytes=max_response_bytes,
+        runtime_profiles=MappingProxyType(runtime_profiles),
+    )
+
     return DeploymentConfig(
         schema_version=2,
         executor_id=executor_id,
@@ -338,4 +413,5 @@ def load_config(path: Path) -> DeploymentConfig:
         limits=limits,
         capabilities=capabilities,
         security=security,
+        control_room=control_room,
     )

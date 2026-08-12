@@ -1,0 +1,9 @@
+{
+  "id": "agent-control-room",
+  "name": "Agent Control Room",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "A Markdown-first control room for agent runtimes, queues, routines, cost, and shared memory.",
+  "author": "Obsidian Hermes contributors",
+  "isDesktopOnly": false
+}
