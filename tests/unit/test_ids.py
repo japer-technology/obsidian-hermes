@@ -27,7 +27,6 @@ def test_source_identity_is_content_derived() -> None:
     identifier = source_id(b"source bytes")
 
     assert identifier == (
-        "src_sha256_"
-        "4d4823794cbed3c4ee0bbc684c8f66e1dfd5afa6f078d494ce254ec5a4671753"
+        "src_sha256_4d4823794cbed3c4ee0bbc684c8f66e1dfd5afa6f078d494ce254ec5a4671753"
     )
     assert validate_id(identifier)

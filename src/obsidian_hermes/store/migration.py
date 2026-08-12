@@ -12,7 +12,6 @@ from importlib.resources.abc import Traversable
 
 from .connection import transaction
 
-
 _MIGRATION_NAME = re.compile(
     r"^(?P<version>[0-9]{4})_(?P<name>[a-z][a-z0-9_]*)\.(?P<direction>up|down)\.sql$"
 )
@@ -196,9 +195,7 @@ def _validate_applied(
         expected_version += 1
         migration = by_version.get(record.version)
         if migration is None:
-            raise MigrationError(
-                f"database contains unknown migration {record.version:04d}"
-            )
+            raise MigrationError(f"database contains unknown migration {record.version:04d}")
         if record.name != migration.name:
             raise MigrationError(
                 f"migration {record.version:04d} name differs from packaged source"

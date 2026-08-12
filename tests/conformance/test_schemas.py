@@ -31,9 +31,7 @@ def test_complete_fixture_exists_and_passes_for_every_schema(registry: SchemaReg
 def test_complete_markdown_resources_cross_the_full_loader(registry: SchemaRegistry) -> None:
     json_task = load_resource(FIXTURES / "valid" / "hermes.task-v2.json", registry=registry)
     markdown_task = load_resource(FIXTURES / "valid" / "hermes.task-v2.md", registry=registry)
-    approval = load_resource(
-        FIXTURES / "valid" / "hermes.approval-v2.md", registry=registry
-    )
+    approval = load_resource(FIXTURES / "valid" / "hermes.approval-v2.md", registry=registry)
 
     assert markdown_task.metadata["schema"] == "hermes.task/v2"
     assert markdown_task.spec_hash == json_task.spec_hash

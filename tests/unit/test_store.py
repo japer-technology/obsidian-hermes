@@ -17,7 +17,6 @@ from obsidian_hermes.store import (
     transaction,
 )
 
-
 HASH_A = "sha256:" + ("a" * 64)
 HASH_B = "sha256:" + ("b" * 64)
 NOW = "2026-08-11T03:00:00Z"
@@ -285,9 +284,7 @@ def test_initial_migration_records_version_app_and_checksum(tmp_path: Path) -> N
         }
         actual_tables = {
             row[0]
-            for row in connection.execute(
-                "SELECT name FROM sqlite_schema WHERE type = 'table'"
-            )
+            for row in connection.execute("SELECT name FROM sqlite_schema WHERE type = 'table'")
         }
         assert required_tables <= actual_tables
         assert connection.execute("PRAGMA foreign_key_check").fetchall() == []
@@ -312,9 +309,12 @@ def test_migration_can_roll_back_and_reapply(tmp_path: Path) -> None:
         apply_migrations(connection, app_version="before")
         assert rollback_migrations(connection, target_version=0) == ()
         assert current_version(connection) == 0
-        assert connection.execute(
-            "SELECT 1 FROM sqlite_schema WHERE type = 'table' AND name = 'commands'"
-        ).fetchone() is None
+        assert (
+            connection.execute(
+                "SELECT 1 FROM sqlite_schema WHERE type = 'table' AND name = 'commands'"
+            ).fetchone()
+            is None
+        )
 
         reapplied = apply_migrations(connection, app_version="after")
         assert reapplied[0].app_version == "after"
@@ -393,17 +393,23 @@ def test_state_event_and_outbox_share_one_transaction(database: sqlite3.Connecti
         transition_with_event()
         raise RuntimeError("abort transition")
 
-    assert database.execute(
-        "SELECT state FROM commands WHERE command_id = 'cmd_01K2ABCDEFGHJKMNPQRSTVWXY2'"
-    ).fetchone()[0] == "queued"
+    assert (
+        database.execute(
+            "SELECT state FROM commands WHERE command_id = 'cmd_01K2ABCDEFGHJKMNPQRSTVWXY2'"
+        ).fetchone()[0]
+        == "queued"
+    )
     assert database.execute("SELECT count(*) FROM events").fetchone()[0] == 0
     assert database.execute("SELECT count(*) FROM outbox").fetchone()[0] == 0
 
     with transaction(database):
         transition_with_event()
-    assert database.execute(
-        "SELECT state FROM commands WHERE command_id = 'cmd_01K2ABCDEFGHJKMNPQRSTVWXY2'"
-    ).fetchone()[0] == "validated"
+    assert (
+        database.execute(
+            "SELECT state FROM commands WHERE command_id = 'cmd_01K2ABCDEFGHJKMNPQRSTVWXY2'"
+        ).fetchone()[0]
+        == "validated"
+    )
     assert database.execute("SELECT count(*) FROM events").fetchone()[0] == 1
     assert database.execute("SELECT count(*) FROM outbox").fetchone()[0] == 1
 
@@ -499,17 +505,13 @@ def test_lease_requires_the_current_fence_row(database: sqlite3.Connection) -> N
         NOW,
     )
 
-    with pytest.raises(sqlite3.IntegrityError, match="FOREIGN KEY"), transaction(
-        database
-    ):
+    with pytest.raises(sqlite3.IntegrityError, match="FOREIGN KEY"), transaction(database):
         database.execute(lease_sql, (*lease_values, 1))
 
     with transaction(database):
         _insert_fence(database, epoch=2)
 
-    with pytest.raises(sqlite3.IntegrityError, match="FOREIGN KEY"), transaction(
-        database
-    ):
+    with pytest.raises(sqlite3.IntegrityError, match="FOREIGN KEY"), transaction(database):
         database.execute(lease_sql, (*lease_values, 1))
 
     with transaction(database):
@@ -531,9 +533,7 @@ def test_approval_action_risk_and_subject_must_agree(
     wrong_subject = (
         '{"type":"task-plan","task_id":"task_other",'
         '"run_id":"run_01K2ABCDEFGHJKMNPQRSTVWXY1",'
-        '"task_generation":1,"hash_kind":"plan","hash":"'
-        + HASH_A
-        + '"}'
+        '"task_generation":1,"hash_kind":"plan","hash":"' + HASH_A + '"}'
     )
     with pytest.raises(sqlite3.IntegrityError, match="CHECK"), transaction(database):
         _insert_task_approval(database, subject_json=wrong_subject)
@@ -542,9 +542,7 @@ def test_approval_action_risk_and_subject_must_agree(
 def test_routine_approval_has_no_task_schema(database: sqlite3.Connection) -> None:
     subject = (
         '{"type":"routine-spec","routine_id":"ingest-worker",'
-        '"revision":1,"hash_kind":"specification","hash":"'
-        + HASH_A
-        + '"}'
+        '"revision":1,"hash_kind":"specification","hash":"' + HASH_A + '"}'
     )
     with transaction(database):
         database.execute(
@@ -597,9 +595,7 @@ def test_approval_subject_is_immutable_and_decision_is_one_way(
     with transaction(database):
         _insert_task_approval(database, approval_id=approval_id)
 
-    with pytest.raises(sqlite3.IntegrityError, match="subject is immutable"), transaction(
-        database
-    ):
+    with pytest.raises(sqlite3.IntegrityError, match="subject is immutable"), transaction(database):
         database.execute(
             "UPDATE approvals SET subject_hash = ? WHERE approval_id = ?",
             (HASH_B, approval_id),
@@ -677,9 +673,7 @@ def test_receipt_idempotency_is_unique_and_receipts_are_immutable(
 def test_terminal_state_requires_a_terminal_receipt(database: sqlite3.Connection) -> None:
     _seed_run(database)
     command_id = "cmd_01K2ABCDEFGHJKMNPQRSTVWXY2"
-    with pytest.raises(
-        sqlite3.IntegrityError, match="terminal receipt"
-    ), transaction(database):
+    with pytest.raises(sqlite3.IntegrityError, match="terminal receipt"), transaction(database):
         database.execute(
             "UPDATE commands SET state = 'completed', updated_at = ? WHERE command_id = ?",
             (NOW, command_id),
@@ -706,13 +700,14 @@ def test_terminal_state_requires_a_terminal_receipt(database: sqlite3.Connection
             "UPDATE commands SET state = 'completed', updated_at = ? WHERE command_id = ?",
             (NOW, command_id),
         )
-    assert database.execute(
-        "SELECT state FROM commands WHERE command_id = ?", (command_id,)
-    ).fetchone()[0] == "completed"
+    assert (
+        database.execute(
+            "SELECT state FROM commands WHERE command_id = ?", (command_id,)
+        ).fetchone()[0]
+        == "completed"
+    )
 
-    with pytest.raises(
-        sqlite3.IntegrityError, match="terminal command"
-    ), transaction(database):
+    with pytest.raises(sqlite3.IntegrityError, match="terminal command"), transaction(database):
         database.execute(
             "UPDATE commands SET state = 'failed', updated_at = ? WHERE command_id = ?",
             (NOW, command_id),
@@ -772,9 +767,12 @@ def test_pre_run_cancellation_can_receive_a_terminal_receipt(
             (NOW, command_id),
         )
 
-    assert database.execute(
-        "SELECT state FROM commands WHERE command_id = ?", (command_id,)
-    ).fetchone()[0] == "cancelled"
+    assert (
+        database.execute(
+            "SELECT state FROM commands WHERE command_id = ?", (command_id,)
+        ).fetchone()[0]
+        == "cancelled"
+    )
 
 
 def test_pre_run_receipt_trace_must_match_its_command(
@@ -784,9 +782,7 @@ def test_pre_run_receipt_trace_must_match_its_command(
         _insert_task(database)
         _insert_command(database)
 
-    with pytest.raises(sqlite3.IntegrityError, match="FOREIGN KEY"), transaction(
-        database
-    ):
+    with pytest.raises(sqlite3.IntegrityError, match="FOREIGN KEY"), transaction(database):
         database.execute(
             """
             INSERT INTO receipts(
@@ -862,9 +858,7 @@ def test_terminal_receipt_status_must_match_terminal_command_state(
             ),
         )
 
-    with pytest.raises(
-        sqlite3.IntegrityError, match="terminal receipt"
-    ), transaction(database):
+    with pytest.raises(sqlite3.IntegrityError, match="terminal receipt"), transaction(database):
         database.execute(
             "UPDATE commands SET state = 'completed', updated_at = ? WHERE command_id = ?",
             (NOW, command_id),
@@ -875,9 +869,12 @@ def test_terminal_receipt_status_must_match_terminal_command_state(
             "UPDATE commands SET state = 'failed', updated_at = ? WHERE command_id = ?",
             (NOW, command_id),
         )
-    assert database.execute(
-        "SELECT state FROM commands WHERE command_id = ?", (command_id,)
-    ).fetchone()[0] == "failed"
+    assert (
+        database.execute(
+            "SELECT state FROM commands WHERE command_id = ?", (command_id,)
+        ).fetchone()[0]
+        == "failed"
+    )
 
 
 def test_events_are_monotonic_and_append_only(database: sqlite3.Connection) -> None:

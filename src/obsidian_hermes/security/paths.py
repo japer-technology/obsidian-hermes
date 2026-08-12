@@ -109,7 +109,8 @@ def find_case_unicode_collisions(paths: list[str]) -> set[tuple[str, str]]:
         key = unicodedata.normalize("NFC", path).casefold()
         previous = seen.get(key)
         if previous is not None and previous != path:
-            collisions.add(tuple(sorted((previous, path))))
+            ordered = sorted((previous, path))
+            collisions.add((ordered[0], ordered[1]))
         else:
             seen[key] = path
     return collisions

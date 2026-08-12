@@ -9,9 +9,9 @@ promoting queue or lease state into durable vault truth.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Protocol, TypeAlias
+from typing import Any, Protocol
 
-JsonObject: TypeAlias = dict[str, Any]
+type JsonObject = dict[str, Any]
 
 
 @dataclass(frozen=True, slots=True)

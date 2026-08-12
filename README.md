@@ -1,79 +1,61 @@
 # Obsidian Hermes
 
 > [!WARNING]
-> This is pre-alpha. It is not yet conformant or safe for real execution.
+> Pre-alpha, validation-only scaffold. It cannot safely dispatch an agent or
+> claim production runtime conformance.
 
-Obsidian Hermes is a local-first, Obsidian-native control room for personal
-agents. The vault is the primary interface and durable memory; Hermes,
-OpenClaw, and future runtimes connect behind typed adapters.
+Obsidian Hermes is a Markdown-first Obsidian control room for agent work. It
+turns a vault into a living workspace for capture, queues, routines, runs,
+approvals, model/depth choices, budgets, costs, activity, and durable memory.
+Hermes Agent, OpenClaw, and future engines are runtime adapters behind the same
+portable task and provenance model.
 
-The design keeps tasks, routines, approvals, evidence, project state, outputs,
-and execution receipts in readable Markdown. Git provides shared provenance,
-review, and recovery across humans and agents. A deterministic bridge handles
-the short-lived transactional coordination that files cannot safely provide.
-
-## Architecture
+## The memory model
 
 ```text
-User
-  ↓
-Obsidian vault (tasks, approvals, context, results)
-  ↓
-Deterministic control bridge
-  ↓
-Hermes cron workers
-  ↓
-Outputs, receipts, and updated knowledge
+Markdown = semantic/declarative memory (current intent and meaning)
+Git      = episodic/shared memory (history, attribution, review, recovery)
+SQLite   = working memory (leases, claims, idempotency, transient overlay)
 ```
 
-## Design principles
+Markdown is the application state and interoperability protocol, not an export
+of a hidden database. Git is a shared memory and review surface, not merely a
+backup. SQLite is disposable and rebuildable; durable meaning and outcomes are
+written back to ordinary Markdown with links to their Git provenance.
 
-- **Local first:** ordinary Markdown remains useful without a model provider.
-- **Human controlled:** consequential actions require explicit approval.
-- **Auditable:** material actions link intent, evidence, output, and receipt.
-- **Evidence backed:** imported sources remain separate from maintained
-  knowledge.
-- **Recoverable:** workers use bounded batches, leases, retries, and dead-letter
-  handling.
-- **Least privilege:** untrusted content cannot grant authority to an agent.
+## What is scaffolded
 
-## Documentation
+- A real Obsidian plugin under [`apps/obsidian-hermes`](apps/obsidian-hermes/)
+  with a Control Room view, offline vault mode, clearly labelled reference
+  preview, capture/proposal notes, runtime/model/depth cards, cost freshness,
+  activity, and Git provenance presentation.
+- A bounded, read-only loopback API at `/api/v1/health` and
+  `/api/v1/snapshot`, with runtime-neutral DTOs, Hermes/OpenClaw descriptors,
+  optional bearer authentication, and explicit Markdown/SQLite/Git provenance.
+- Strict v2 Draft 2020-12 schemas, frontmatter security checks, canonical
+  hashes, typed identifiers, deterministic transitions, and a reversible SQLite
+  coordination migration.
+- A reference vault containing ordinary Markdown control-room pages for
+  Capture, Queue, Routines, Runs, Models and Costs, Approvals, Activity, the
+  Runtime Registry, and Git Memory.
 
-| Document | Status | Purpose |
-| --- | --- | --- |
-| [Obsidian Control Room](docs/product/control-room.md) | Product target | Primary UX, local Vault API, costs, and multi-runtime adapters |
-| [Markdown and Git architecture](docs/architecture/markdown-and-git.md) | Canonical | Durable state, shared memory, and rebuildable coordination rules |
-| [Project overview](docs/overview.md) | Canonical | Concepts, workflows, and intended capabilities |
-| [Runtime specification v2.0](docs/specification/v2.0.md) | Canonical | Current schemas, control-plane contracts, and safety requirements |
-| [Runtime specification v1.0](docs/specification/v1.0.md) | Superseded | Historical cron-first baseline and v2 migration source |
-| [Design brainstorm](docs/design/brainstorm.md) | Exploratory | Product direction, risks, and possible delivery sequence |
-| [Research notes](docs/research/) | Non-normative | External reviews retained as design input |
+Everything that would mutate a runtime remains disabled. The plugin writes
+reviewable Markdown proposals; it does not write SQLite, call a model, commit
+Git, or pretend that a preview is live.
 
-See the [documentation index](docs/) for document ownership and status.
+## Read next
 
-## Implemented scaffold
-
-The repository now establishes Python 3.12 as the reference implementation
-toolchain and includes:
-
-- strict executable schemas and complete fixtures for all eleven v2 resources;
-- safe Markdown frontmatter parsing, typed identifiers, canonical hashes, and
-  a closed command-state policy;
-- an explicit SQLite migration for resources, commands, runs, leases,
-  approvals, receipts, events, outbox, fencing, and migration history;
-- a validation-only bridge and CLI that cannot dispatch workers;
-- the three-zone reference vault, deployment examples, and CI checks.
-
-The Obsidian plugin, local Vault API, runtime adapters, live subscriptions,
-model/pricing catalogue, Hermes discovery adapter, authenticated approvals and
-dispatch, workers, projections, backup/restore, and lifecycle recovery remain
-implementation work.
-See [implementation status](docs/implementation-status.md) for the exact
-boundary.
+| Document | Purpose |
+| --- | --- |
+| [Control Room product contract](docs/product/control-room.md) | Obsidian UX, runtime adapters, pricing, approvals, and first vertical slice |
+| [Markdown and Git architecture](docs/architecture/markdown-and-git.md) | Canonical ownership, three memories, Git provenance, and reconstruction invariant |
+| [v2.0 specification](docs/specification/v2.0.md) | Normative safety, schemas, transitions, and execution contracts |
+| [Implementation status](docs/implementation-status.md) | What is available and what remains deliberately blocked |
+| [Reference vault](reference-vault/README.md) | Copyable Markdown-first experience scaffold |
 
 ## Development
 
-Create a Python 3.12 environment and install the editable package:
+Python 3.12 is the bridge toolchain. Node 22 is used for the plugin CI job.
 
 ```console
 python -m pip install -e ".[dev]"
@@ -81,40 +63,32 @@ python -m pytest
 python -m ruff format --check .
 python -m ruff check .
 python -m mypy
+
+cd apps/obsidian-hermes
+npm install
+npm run check
+npm run build
 ```
 
-Useful validation-only commands are:
-
-```console
-obsidian-hermes validate schemas
-obsidian-hermes validate resource tests/fixtures/v2/valid/hermes.task-v2.json
-obsidian-hermes validate vault --config config/hermes.example.toml
-obsidian-hermes bridge run --config /etc/obsidian-hermes/hermes.toml --once
-```
-
-The example configuration contains deployment paths and must be copied and
-reviewed; it is not expected to run directly from a source checkout.
+The plugin release artifacts are `manifest.json`, `main.js`, and `styles.css`.
+Install them only in a disposable test vault. The official Obsidian guidance
+also recommends deferring layout work until the workspace is ready and using
+the platform request API for network calls; this scaffold follows both rules.
 
 ## Repository layout
 
 | Path | Purpose |
 | --- | --- |
-| `src/obsidian_hermes/` | Deterministic bridge kernel and packaged contracts |
-| `tests/` | Unit, schema-conformance, security, and future acceptance coverage |
-| `reference-vault/` | Non-production three-zone Obsidian vault scaffold |
-| `config/` | Fail-closed reference bridge configuration |
-| `deploy/` | Docker/Hermes and service-manager examples |
-| `docs/` | Canonical specifications, implementation status, and research |
+| `apps/obsidian-hermes/` | Obsidian Control Room plugin |
+| `src/obsidian_hermes/` | Deterministic bridge, contracts, schemas, and coordination store |
+| `tests/` | Unit, security, schema, API, and conformance fixtures |
+| `reference-vault/` | Standard Markdown experience and policy scaffold |
+| `config/` and `deploy/` | Fail-closed host configuration and service examples |
+| `docs/` | Canonical product architecture, v2 specification, status, and research |
 
-## Contributing
-
-Read [CONTRIBUTING.md](CONTRIBUTING.md) before proposing a change. Design
-changes should identify affected schemas, permissions, failure modes, migration
-needs, and recovery tests.
-
-For help, see [SUPPORT.md](SUPPORT.md). Please report vulnerabilities according
-to [SECURITY.md](SECURITY.md), not through a public issue.
+See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and
+[SUPPORT.md](SUPPORT.md) before using the scaffold with real data.
 
 ## License
 
-Obsidian Hermes is available under the [MIT License](LICENSE).
+MIT. See [LICENSE](LICENSE).

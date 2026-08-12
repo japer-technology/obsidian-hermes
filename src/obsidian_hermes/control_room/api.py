@@ -148,10 +148,10 @@ class _ControlRoomRequestHandler(BaseHTTPRequestHandler):
             return
         self._send_json(HTTPStatus.OK, body, include_body=include_body)
 
-    def do_GET(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler protocol name
+    def do_GET(self) -> None:
         self._read(include_body=True)
 
-    def do_HEAD(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler protocol name
+    def do_HEAD(self) -> None:
         self._read(include_body=False)
 
     def _reject_mutation(self) -> None:
@@ -166,19 +166,19 @@ class _ControlRoomRequestHandler(BaseHTTPRequestHandler):
             self._error("read_only", "the control-room API does not accept mutations"),
         )
 
-    def do_POST(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler protocol name
+    def do_POST(self) -> None:
         self._reject_mutation()
 
-    def do_PUT(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler protocol name
+    def do_PUT(self) -> None:
         self._reject_mutation()
 
-    def do_PATCH(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler protocol name
+    def do_PATCH(self) -> None:
         self._reject_mutation()
 
-    def do_DELETE(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler protocol name
+    def do_DELETE(self) -> None:
         self._reject_mutation()
 
-    def do_OPTIONS(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler protocol name
+    def do_OPTIONS(self) -> None:
         self._reject_mutation()
 
 

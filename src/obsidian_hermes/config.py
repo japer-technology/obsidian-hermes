@@ -178,9 +178,10 @@ def load_config(path: Path) -> DeploymentConfig:
         "",
     )
     executor_id = document.get("executor_id")
-    if not isinstance(executor_id, str) or re.fullmatch(
-        r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*", executor_id
-    ) is None:
+    if (
+        not isinstance(executor_id, str)
+        or re.fullmatch(r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*", executor_id) is None
+    ):
         raise ConfigurationError("executor_id must be a stable lowercase slug")
 
     bridge_data = _table(document, "bridge")
@@ -276,9 +277,7 @@ def load_config(path: Path) -> DeploymentConfig:
         executable=_absolute_path(hermes_data, "executable", "hermes"),
         profile=_string(hermes_data, "profile", "hermes"),
         timezone=timezone,
-        gateway_restart_enabled=_boolean(
-            hermes_data, "gateway_restart_enabled", "hermes"
-        ),
+        gateway_restart_enabled=_boolean(hermes_data, "gateway_restart_enabled", "hermes"),
     )
 
     vault = VaultSettings(
@@ -306,12 +305,8 @@ def load_config(path: Path) -> DeploymentConfig:
 
     limits = LimitSettings(
         max_files_per_scan=_positive_integer(limits_data, "max_files_per_scan", "limits"),
-        max_resource_bytes=_positive_integer(
-            limits_data, "max_resource_bytes", "limits"
-        ),
-        max_items_per_dispatch=_positive_integer(
-            limits_data, "max_items_per_dispatch", "limits"
-        ),
+        max_resource_bytes=_positive_integer(limits_data, "max_resource_bytes", "limits"),
+        max_items_per_dispatch=_positive_integer(limits_data, "max_items_per_dispatch", "limits"),
         lease_seconds=_positive_integer(limits_data, "lease_seconds", "limits"),
         bulk_change_files=_positive_integer(limits_data, "bulk_change_files", "limits"),
     )
@@ -366,16 +361,10 @@ def load_config(path: Path) -> DeploymentConfig:
     port = _positive_integer(control_room_data, "port", "control_room")
     if port > 65_535:
         raise ConfigurationError("[control_room].port must be between 1 and 65535")
-    max_items = _positive_integer(
-        control_room_data, "max_items_per_collection", "control_room"
-    )
+    max_items = _positive_integer(control_room_data, "max_items_per_collection", "control_room")
     if max_items > 2_000:
-        raise ConfigurationError(
-            "[control_room].max_items_per_collection must be at most 2000"
-        )
-    max_response_bytes = _positive_integer(
-        control_room_data, "max_response_bytes", "control_room"
-    )
+        raise ConfigurationError("[control_room].max_items_per_collection must be at most 2000")
+    max_response_bytes = _positive_integer(control_room_data, "max_response_bytes", "control_room")
     if not 4_096 <= max_response_bytes <= 8_388_608:
         raise ConfigurationError(
             "[control_room].max_response_bytes must be between 4096 and 8388608"

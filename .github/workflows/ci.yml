@@ -53,6 +53,6 @@ jobs:
         with:
           node-version: "22"
       - name: Install plugin dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
       - name: Type-check and bundle plugin
         run: npm run build

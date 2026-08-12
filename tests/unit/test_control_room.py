@@ -25,13 +25,7 @@ from obsidian_hermes.control_room.vault import FilesystemVaultStateReader
 
 ROOT = Path(__file__).parents[2]
 FIXTURE = ROOT / "tests" / "fixtures" / "api" / "v1" / "control-room-snapshot.json"
-CONTRACT = (
-    ROOT
-    / "src"
-    / "obsidian_hermes"
-    / "contracts"
-    / "control-room-snapshot-v1.schema.json"
-)
+CONTRACT = ROOT / "src" / "obsidian_hermes" / "contracts" / "control-room-snapshot-v1.schema.json"
 NOW = datetime(2026, 8, 12, 1, 30, tzinfo=UTC)
 
 
@@ -79,7 +73,8 @@ def _assembler(
     runtimes = StaticRuntimeCatalog(
         tuple(
             # The fixture is also the representative runtime discovery payload.
-            _runtime_descriptor(item) for item in fixture["runtimes"]
+            _runtime_descriptor(item)
+            for item in fixture["runtimes"]
         )
     )
     return ControlRoomSnapshotAssembler(
@@ -119,9 +114,7 @@ def test_representative_snapshot_satisfies_v1_contract() -> None:
         for runtime in fixture["runtimes"]
         for model in runtime["models"]
     }
-    flat_models = {
-        (model["runtime_id"], model["model_id"]) for model in fixture["models"]
-    }
+    flat_models = {(model["runtime_id"], model["model_id"]) for model in fixture["models"]}
     assert flat_models == nested_models
     assert {item["runtime_id"] for item in fixture["tasks"]} <= {
         item["runtime_id"] for item in fixture["runtimes"]
@@ -239,9 +232,7 @@ def test_filesystem_reader_labels_allowed_zones_and_never_enumerates_private(
     tmp_path: Path,
 ) -> None:
     task_source = ROOT / "tests" / "fixtures" / "v2" / "valid" / "hermes.task-v2.md"
-    approval_source = (
-        ROOT / "tests" / "fixtures" / "v2" / "valid" / "hermes.approval-v2.md"
-    )
+    approval_source = ROOT / "tests" / "fixtures" / "v2" / "valid" / "hermes.approval-v2.md"
     read_write = tmp_path / "ReadWrite"
     read_only = tmp_path / "ReadOnly"
     private = tmp_path / "Private"
@@ -339,11 +330,7 @@ def test_server_exposes_only_read_only_versioned_routes() -> None:
 
 
 def test_response_byte_limit_is_enforced_before_transport() -> None:
-    vault = VaultState(
-        warnings=(
-            {"code": "large", "message": "x" * 10_000, "path": None},
-        )
-    )
+    vault = VaultState(warnings=({"code": "large", "message": "x" * 10_000, "path": None},))
     api = ControlRoomApi(_assembler(vault=vault, max_response_bytes=4_096))
 
     with pytest.raises(ResponseTooLargeError):

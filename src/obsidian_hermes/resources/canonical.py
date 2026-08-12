@@ -175,9 +175,7 @@ def plan_hash(plan: Mapping[str, Any]) -> str:
             raise ResourceValidationError(f"plan action {index} arguments must be a mapping")
         idempotency_key = action["idempotency_key"]
         if not isinstance(idempotency_key, str) or not idempotency_key:
-            raise ResourceValidationError(
-                f"plan action {index} has an invalid idempotency_key"
-            )
+            raise ResourceValidationError(f"plan action {index} has an invalid idempotency_key")
         if idempotency_key in idempotency_keys:
             raise ResourceValidationError("plan action idempotency keys must be unique")
         idempotency_keys.add(idempotency_key)
@@ -203,9 +201,7 @@ def approval_attestation_payload(approval: Mapping[str, Any]) -> bytes:
     decision = approval["decision"]
     if not isinstance(decision, str) or decision not in {"approved", "rejected"}:
         raise ResourceValidationError("pending approval decisions cannot be attested")
-    if not isinstance(approval["id"], str) or not validate_id(
-        approval["id"], prefix="approval"
-    ):
+    if not isinstance(approval["id"], str) or not validate_id(approval["id"], prefix="approval"):
         raise ResourceValidationError("approval attestation requires a valid approval ID")
     if not isinstance(approval["decided_by"], str) or not approval["decided_by"]:
         raise ResourceValidationError("approval attestation requires a non-empty approver")
@@ -213,11 +209,14 @@ def approval_attestation_payload(approval: Mapping[str, Any]) -> bytes:
         raise ResourceValidationError("approval attestation requires the complete subject")
     if not isinstance(approval["expires_at"], str) or not approval["expires_at"]:
         raise ResourceValidationError("approval attestation requires an expiry")
-    if re.fullmatch(
-        r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"
-        r"(?:\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})",
-        approval["expires_at"],
-    ) is None:
+    if (
+        re.fullmatch(
+            r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"
+            r"(?:\.[0-9]+)?(?:Z|[+-][0-9]{2}:[0-9]{2})",
+            approval["expires_at"],
+        )
+        is None
+    ):
         raise ResourceValidationError("approval attestation requires an RFC 3339 expiry")
     try:
         expiry = datetime.fromisoformat(approval["expires_at"].replace("Z", "+00:00"))

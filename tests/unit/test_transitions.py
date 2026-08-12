@@ -1,3 +1,5 @@
+from itertools import pairwise
+
 import pytest
 
 from obsidian_hermes.domain.enums import CommandState
@@ -14,9 +16,7 @@ def test_normative_happy_path_edges_are_allowed() -> None:
         CommandState.COMPLETED,
     ]
 
-    assert all(
-        can_transition(current, target) for current, target in zip(path, path[1:], strict=False)
-    )
+    assert all(can_transition(current, target) for current, target in pairwise(path))
 
 
 def test_terminal_state_cannot_transition() -> None:

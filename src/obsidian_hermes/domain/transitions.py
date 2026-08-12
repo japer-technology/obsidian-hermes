@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from obsidian_hermes.domain.enums import CommandState, TERMINAL_COMMAND_STATES
+from obsidian_hermes.domain.enums import TERMINAL_COMMAND_STATES, CommandState
 
 _FORWARD_TRANSITIONS: Mapping[CommandState, frozenset[CommandState]] = {
     CommandState.QUEUED: frozenset(

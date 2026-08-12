@@ -63,9 +63,7 @@ def _merge_overlay_records(
     identifier: str,
     volatile_fields: tuple[str, ...],
 ) -> list[JsonObject]:
-    merged: dict[str, JsonObject] = {
-        str(record[identifier]): dict(record) for record in canonical
-    }
+    merged: dict[str, JsonObject] = {str(record[identifier]): dict(record) for record in canonical}
     for overlay_record in overlay:
         key = str(overlay_record[identifier])
         if key not in merged:
@@ -131,9 +129,7 @@ class ControlRoomSnapshotAssembler:
             runtime.as_json(model_limit=limit) for runtime in runtime_descriptors[:limit]
         )
         repository = (
-            self._repository.read_repository_provenance()
-            if self._repository is not None
-            else None
+            self._repository.read_repository_provenance() if self._repository is not None else None
         )
         return (
             vault,
@@ -165,9 +161,7 @@ class ControlRoomSnapshotAssembler:
         )
         queue = queue_unbounded[:limit]
         for item in queue:
-            canonical_path, runtime_id = task_links.get(
-                str(item["task_id"]), (None, "unresolved")
-            )
+            canonical_path, runtime_id = task_links.get(str(item["task_id"]), (None, "unresolved"))
             item["runtime_id"] = runtime_id
             if canonical_path is not None:
                 item["canonical_note_path"] = canonical_path
@@ -296,10 +290,7 @@ class ControlRoomSnapshotAssembler:
             "repository": repository,
             "warnings": warnings,
             "truncated": (
-                vault.truncated
-                or store.truncated
-                or runtime_truncated
-                or collection_truncated
+                vault.truncated or store.truncated or runtime_truncated or collection_truncated
             ),
         }
 

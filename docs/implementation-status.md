@@ -17,6 +17,8 @@ without starting a model or worker:
 | Identity and hashes | Typed Crockford ULIDs, content-derived source IDs, compact sorted JSON, explicit v2 resource hash selections, and complete-plan hashing |
 | Operational store | File-backed SQLite in WAL/FULL mode, foreign keys, explicit transactions, ordered reversible migration, fencing, immutable receipts/events, and uniqueness constraints |
 | Bridge | Static access-boundary checks and periodic validation-only full rescans; no writes or dispatch |
+| Control-room API | Bounded, read-only loopback `/api/v1/health` and `/api/v1/snapshot` DTOs; optional bearer auth; Markdown-first composition with SQLite overlay labels |
+| Obsidian UX | Buildable Control Room plugin with vault/offline mode, explicit reference preview, capture/proposal Markdown, runtime/model/depth/cost presentation, and Git-memory provenance |
 | Migration | Closed, non-mutating classification of v1 operations |
 | Deployment | Three-zone reference vault, fail-closed example configuration, independent Docker mounts, and a hardened service-unit starting point |
 
@@ -40,6 +42,12 @@ have no trusted production implementation yet:
   receipt verification;
 - queue recovery, daily brief generation, paired backup/restore, and v1
   migration application.
+
+The plugin's control gestures currently create Markdown proposals only. The
+loopback API is intentionally read-only, and the default Git provenance port
+reports unavailable rather than executing Git commands. A connected runtime,
+live commit provenance reader, and authenticated mutating control endpoints
+remain future work.
 
 The validation-only bridge raises a safety block if execution is enabled in
 configuration. The bundled gates report `wakeAgent: false`, so an empty or

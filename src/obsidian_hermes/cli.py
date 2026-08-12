@@ -76,9 +76,7 @@ def _parser() -> argparse.ArgumentParser:
     control_room = commands.add_parser(
         "control-room", help="serve the read-only Obsidian control-room API"
     )
-    control_room_commands = control_room.add_subparsers(
-        dest="control_room_command", required=True
-    )
+    control_room_commands = control_room.add_subparsers(dest="control_room_command", required=True)
     control_room_serve = control_room_commands.add_parser("serve")
     _add_config(control_room_serve)
 
@@ -178,9 +176,7 @@ def _dispatch(args: argparse.Namespace) -> int:
     if args.command == "control-room" and args.control_room_command == "serve":
         config = load_config(args.config)
         if not config.bridge.validation_only or config.bridge.dispatch_enabled:
-            raise ConfigurationError(
-                "control-room scaffold requires validation-only bridge mode"
-            )
+            raise ConfigurationError("control-room scaffold requires validation-only bridge mode")
         settings = config.control_room
         assembler = ControlRoomSnapshotAssembler(
             vault=FilesystemVaultStateReader(
@@ -208,9 +204,7 @@ def _dispatch(args: argparse.Namespace) -> int:
             bearer_token=bearer_token_from_environment(),
         )
         server = create_server(api, host=settings.bind_host, port=settings.port)
-        url_host = (
-            f"[{settings.bind_host}]" if ":" in settings.bind_host else settings.bind_host
-        )
+        url_host = f"[{settings.bind_host}]" if ":" in settings.bind_host else settings.bind_host
         _emit(
             {
                 "api": "obsidian-hermes.control-room/v1",

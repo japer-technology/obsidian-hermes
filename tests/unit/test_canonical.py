@@ -118,9 +118,7 @@ def test_plan_hash_is_order_sensitive_and_requires_complete_actions() -> None:
         plan_hash(
             {
                 **plan,
-                "actions": [
-                    {"step_id": "one", "arguments": None, "idempotency_key": "cmd:one:v1"}
-                ],
+                "actions": [{"step_id": "one", "arguments": None, "idempotency_key": "cmd:one:v1"}],
             }
         )
     with pytest.raises(ResourceValidationError, match="must be unique"):

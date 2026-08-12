@@ -130,9 +130,7 @@ def _routine(document: ResourceDocument, note_path: str, runtime_id: str) -> Jso
         "last_run": None,
         "canonical_note_path": note_path,
         "source_of_truth": _source(note_path, document.spec_hash),
-        "field_sources": _field_sources(
-            "name", "desired_state", "schedule", "model_selection"
-        ),
+        "field_sources": _field_sources("name", "desired_state", "schedule", "model_selection"),
     }
 
 
@@ -399,14 +397,14 @@ class FilesystemVaultStateReader:
                 runs.append(_run(document, note_path, runtime_id))
             elif schema == "hermes.approval/v2":
                 subject = _mapping(data.get("subject"))
-                runtime_id = run_runtime.get(str(subject.get("run_id")))
-                if runtime_id is None:
-                    runtime_id = task_runtime.get(str(subject.get("task_id")), "unresolved")
+                runtime_id = run_runtime.get(str(subject.get("run_id"))) or task_runtime.get(
+                    str(subject.get("task_id")), "unresolved"
+                )
                 approvals.append(_approval(document, note_path, runtime_id))
             elif schema == "hermes.event/v2":
-                runtime_id = run_runtime.get(str(data.get("run_id")))
-                if runtime_id is None:
-                    runtime_id = task_runtime.get(str(data.get("task_id")), "unresolved")
+                runtime_id = run_runtime.get(str(data.get("run_id"))) or task_runtime.get(
+                    str(data.get("task_id")), "unresolved"
+                )
                 activity.append(_activity(document, note_path, runtime_id))
 
         # Keep deterministic ordering even when filesystem traversal differs.

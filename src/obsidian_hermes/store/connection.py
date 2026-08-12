@@ -8,7 +8,6 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Literal
 
-
 TransactionMode = Literal["DEFERRED", "IMMEDIATE", "EXCLUSIVE"]
 _TRANSACTION_MODES = frozenset({"DEFERRED", "IMMEDIATE", "EXCLUSIVE"})
 

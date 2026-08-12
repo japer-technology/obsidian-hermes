@@ -33,6 +33,7 @@ dev = [
   "pytest-cov>=6,<7",
   "ruff>=0.9,<1",
   "types-PyYAML>=6.0.12,<7",
+  "types-jsonschema>=4.23,<5",
 ]
 
 [project.scripts]
@@ -75,6 +76,7 @@ markers = [
 target-version = "py312"
 line-length = 100
 src = ["src", "tests"]
+extend-exclude = ["docs/specification/v1.0.md"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
