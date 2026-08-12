@@ -39,8 +39,19 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Build plugin release artifact
+        working-directory: apps/obsidian-hermes
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
       - run: python -m pip install --disable-pip-version-check build
       - run: python -m build
+      - name: Verify lifecycle release assets are packaged
+        run: |
+          python -c "import zipfile; from pathlib import Path; wheel = next(Path('dist').glob('*.whl')); names = set(zipfile.ZipFile(wheel).namelist()); required = {'obsidian_hermes/lifecycle/assets/apps/obsidian-hermes/main.js', 'obsidian_hermes/lifecycle/assets/apps/obsidian-hermes/manifest.json', 'obsidian_hermes/lifecycle/assets/apps/obsidian-hermes/styles.css', 'obsidian_hermes/lifecycle/assets/reference-vault/README.md'}; missing = required - names; assert not missing, f'Missing lifecycle assets: {sorted(missing)}'"
 
   obsidian-plugin:
     runs-on: ubuntu-latest

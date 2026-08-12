@@ -35,3 +35,7 @@ class StoreError(HermesError):
 
 class SafetyBlock(HermesError):
     """Execution is intentionally disabled until a safety precondition passes."""
+
+
+class LifecycleError(HermesError):
+    """A managed installation cannot be safely changed."""

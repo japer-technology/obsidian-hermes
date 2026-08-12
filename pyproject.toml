@@ -49,6 +49,12 @@ Issues = "https://github.com/japer-technology/obsidian-hermes/issues"
 [tool.hatch.build.targets.wheel]
 packages = ["src/obsidian_hermes"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"apps/obsidian-hermes/main.js" = "obsidian_hermes/lifecycle/assets/apps/obsidian-hermes/main.js"
+"apps/obsidian-hermes/manifest.json" = "obsidian_hermes/lifecycle/assets/apps/obsidian-hermes/manifest.json"
+"apps/obsidian-hermes/styles.css" = "obsidian_hermes/lifecycle/assets/apps/obsidian-hermes/styles.css"
+"reference-vault" = "obsidian_hermes/lifecycle/assets/reference-vault"
+
 [tool.hatch.build.targets.sdist]
 include = [
   "/apps",
@@ -62,6 +68,9 @@ include = [
   "/LICENSE",
   "/README.md",
 ]
+
+[tool.hatch.build.targets.sdist.force-include]
+"apps/obsidian-hermes/main.js" = "apps/obsidian-hermes/main.js"
 
 [tool.pytest.ini_options]
 addopts = "--strict-config --strict-markers -ra"

@@ -1,7 +1,8 @@
 # Support
 
-Obsidian Hermes is not yet installable. Support currently covers the design
-documents and contribution process.
+Obsidian Hermes is pre-alpha. It provides local lifecycle management for the
+bundled Obsidian plugin and reference vault, but it does not yet provide a
+production runtime installation or dispatch capability.
 
 - Read the [project README](README.md) and
   [documentation index](docs/README.md).

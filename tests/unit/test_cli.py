@@ -27,3 +27,27 @@ def test_migration_plan_never_marks_v1_work_executable(
     output = json.loads(capsys.readouterr().out)
     assert output["executable"] is False
     assert output["mutates_source"] is False
+
+
+def test_lifecycle_doctor_reports_uninstalled_vault(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    (tmp_path / ".obsidian").mkdir()
+    source_root = Path(__file__).parents[2]
+
+    assert (
+        main(
+            [
+                "lifecycle",
+                "--vault",
+                str(tmp_path),
+                "--source-root",
+                str(source_root),
+                "doctor",
+            ]
+        )
+        == 2
+    )
+    output = json.loads(capsys.readouterr().out)
+    assert output["installed"] is False
+    assert output["issues"][0]["code"] == "not_installed"

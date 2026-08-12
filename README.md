@@ -2,7 +2,8 @@
 
 > [!WARNING]
 > Pre-alpha, validation-only scaffold. It cannot safely dispatch an agent or
-> claim production runtime conformance.
+> claim production runtime conformance. Its current executable focus is safe
+> local lifecycle management of the vault-facing capabilities.
 
 Obsidian Hermes is a Markdown-first Obsidian control room for agent work. It
 turns a vault into a living workspace for capture, queues, routines, runs,
@@ -88,6 +89,32 @@ the platform request API for network calls; this scaffold follows both rules.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and
 [SUPPORT.md](SUPPORT.md) before using the scaffold with real data.
+
+## Lifecycle manager
+
+The lifecycle commands manage the bundled Obsidian plugin and seed the
+reference-vault notes. They record only the plugin release files in an
+installation manifest at `.obsidian-hermes/installation.json`; seeded Markdown
+is immediately user-owned and is never overwritten or removed.
+
+The installed package uses its bundled release assets. To run directly from a
+checkout, build the plugin first and supply that checkout with `--source-root`.
+Then run:
+
+```console
+obsidian-hermes lifecycle --vault /path/to/vault install
+obsidian-hermes lifecycle --vault /path/to/vault doctor
+obsidian-hermes lifecycle --vault /path/to/vault update
+obsidian-hermes lifecycle --vault /path/to/vault repair
+obsidian-hermes lifecycle --vault /path/to/vault uninstall
+```
+
+`install` refuses to replace an unmanaged plugin by default; `--force` adopts
+it after making a local backup. `update` and `repair` back up a replaced plugin
+file under `.obsidian-hermes/backups/`. `uninstall` removes only unmodified,
+manifest-tracked plugin assets and always preserves Markdown. Use
+`uninstall --purge-state` only to remove the lifecycle manifest and known
+backups after a clean uninstall; unrecognised state files are retained.
 
 ## License
 

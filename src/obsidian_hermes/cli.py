@@ -29,6 +29,7 @@ from obsidian_hermes.control_room.snapshot import (
 from obsidian_hermes.control_room.store_overlay import SqliteStoreOverlayReader
 from obsidian_hermes.control_room.vault import FilesystemVaultStateReader
 from obsidian_hermes.domain.errors import ConfigurationError, HermesError
+from obsidian_hermes.lifecycle import LifecycleManager
 from obsidian_hermes.migration import classify_operation
 from obsidian_hermes.resources.loader import load_resource
 from obsidian_hermes.resources.validation import SchemaRegistry
@@ -80,6 +81,28 @@ def _parser() -> argparse.ArgumentParser:
     control_room_serve = control_room_commands.add_parser("serve")
     _add_config(control_room_serve)
 
+    lifecycle = commands.add_parser(
+        "lifecycle", help="install and maintain vault-facing capabilities"
+    )
+    lifecycle.add_argument("--vault", type=Path, required=True, help="Obsidian vault directory")
+    lifecycle.add_argument(
+        "--source-root",
+        type=Path,
+        help="release checkout containing apps/obsidian-hermes (default: bundled release assets)",
+    )
+    lifecycle_commands = lifecycle.add_subparsers(dest="lifecycle_command", required=True)
+    lifecycle_install = lifecycle_commands.add_parser("install")
+    lifecycle_install.add_argument(
+        "--force", action="store_true", help="adopt existing plugin files after backing them up"
+    )
+    lifecycle_commands.add_parser("update")
+    lifecycle_commands.add_parser("repair")
+    lifecycle_commands.add_parser("doctor")
+    lifecycle_uninstall = lifecycle_commands.add_parser("uninstall")
+    lifecycle_uninstall.add_argument(
+        "--purge-state", action="store_true", help="also remove lifecycle backups and state"
+    )
+
     migration = commands.add_parser("migrate-v1", help="plan a non-mutating v1 migration")
     migration_commands = migration.add_subparsers(dest="migration_command", required=True)
     migration_plan = migration_commands.add_parser("plan")
@@ -106,6 +129,25 @@ def _report_scan(bridge: ValidationOnlyBridge) -> int:
 
 
 def _dispatch(args: argparse.Namespace) -> int:
+    if args.command == "lifecycle":
+        manager = LifecycleManager(vault=args.vault, source_root=args.source_root)
+        if args.lifecycle_command == "install":
+            _emit(manager.install(force=args.force))
+            return 0
+        if args.lifecycle_command == "update":
+            _emit(manager.update())
+            return 0
+        if args.lifecycle_command == "repair":
+            _emit(manager.repair())
+            return 0
+        if args.lifecycle_command == "doctor":
+            payload, healthy = manager.doctor()
+            _emit(payload)
+            return 0 if healthy else 2
+        if args.lifecycle_command == "uninstall":
+            _emit(manager.uninstall(purge_state=args.purge_state))
+            return 0
+
     if args.command == "validate" and args.validate_command == "schemas":
         SchemaRegistry.bundled()
         _emit({"valid": True, "schema_version": 2, "schemas": sorted(SCHEMA_FILENAMES)})
